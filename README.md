@@ -25,7 +25,7 @@ let favoriteColor = await CollectorUtils.collectByMessage(
     (nextMsg: Message) => nextMsg.author.id === msg.author.id,
     // Stop Filter
     (nextMsg: Message) =>
-        nextMsg.author.id === msg.author.id && nextMsg.content.toLowerCase() === '!test',
+        nextMsg.author.id === msg.author.id && nextMsg.content.toLowerCase() === 'stop',
     // Retrieve Result
     async (nextMsg: Message) => {
         let colorOptions = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
