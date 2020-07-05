@@ -29,9 +29,11 @@ let favoriteColor: string = await CollectorUtils.collectByMessage(
     // Retrieve Result
     async (nextMsg: Message) => {
         let colorOptions = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
+        
         let favoriteColor = colorOptions.find(
             colorOption => colorOption === nextMsg.content.toLowerCase()
         );
+
         if (!favoriteColor) {
             await nextMsg.channel.send(`Sorry, that color is not an option.`);
             return;
