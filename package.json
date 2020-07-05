@@ -1,6 +1,6 @@
 {
     "name": "discord.js-collector-utils",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "author": "Kevin Novak",
     "description": "Collector extensions for discord.js.",
     "license": "MIT",
@@ -17,12 +17,21 @@
         "tslint": "^6.1.2",
         "typescript": "^3.9.6"
     },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/KevinNovak/discord.js-Collector-Utils.git"
+    },
     "keywords": [
+        "collection",
+        "collections",
         "collector",
         "collectors",
         "discord",
         "discord.js",
         "extension",
-        "extensions"
+        "extensions",
+        "util",
+        "utilities",
+        "utility"
     ]
 }
