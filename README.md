@@ -1,5 +1,13 @@
-# discord.js-collectors
+# discord.js-Collector-Utils
 
 Collector extensions for discord.js.
 
-`npm install discord.js-collectors`
+## Installation
+
+`npm install discord.js-collector-utils`
+
+## Usage
+
+```typescript
+import { CollectorUtils } from 'discord.js-collector-utils';
+```
