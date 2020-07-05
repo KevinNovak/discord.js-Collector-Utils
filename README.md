@@ -14,7 +14,7 @@ import { CollectorUtils } from 'discord.js-collector-utils';
 
 ## `collectByMessage` Example
 
-![](https://i.imgur.com/BrOic5W.png)
+![collectByMessage Example](https://i.imgur.com/BrOic5W.png)
 
 ```typescript
 await msg.channel.send('What is your favorite color?');
@@ -57,4 +57,49 @@ if (favoriteColor === undefined) {
 }
 
 await msg.channel.send(`You selected **${favoriteColor}**. Nice choice!`);
+```
+
+## `collectByReaction` Example
+
+![collectByReaction Example](https://i.imgur.com/SWJdQJc.png)
+
+```typescript
+let prompt = await msg.channel.send('Please select your favorite fruit!');
+
+prompt.react('🍉');
+prompt.react('🍎');
+prompt.react('🍌');
+
+let favoriteFruit = await CollectorUtils.collectByReaction(
+    prompt,
+    // Collect Filter
+    (msgReaction: MessageReaction, reactor: User) => reactor.id === msg.author.id,
+    // Stop Filter
+    (nextMsg: Message) => nextMsg.author.id === msg.author.id && nextMsg.content === 'stop',
+    // Retrieve Result
+    async (msgReaction: MessageReaction, reactor: User) => {
+        switch (msgReaction.emoji.name) {
+            case '🍉':
+                return 'Watermelon';
+            case '🍎':
+                return 'Apple';
+            case '🍌':
+                return 'Banana';
+            default:
+                return;
+        }
+    },
+    // Expire Function
+    async () => {
+        await msg.channel.send('Too slow! Try being more decisive next time.');
+    },
+    // Options
+    { time: 10000, resetInvalid: true }
+);
+
+if (favoriteFruit === undefined) {
+    return;
+}
+
+await msg.channel.send(`You selected **${favoriteFruit}**. Nice choice!`);
 ```
