@@ -1,6 +1,6 @@
 # discord.js-Collector-Utils
 
-Collector extensions for discord.js.
+Collector utilities for discord.js.
 
 ## Installation
 
