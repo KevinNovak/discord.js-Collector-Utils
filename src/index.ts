@@ -20,6 +20,15 @@ export declare interface CollectByReactionOptions {
 }
 
 export abstract class CollectorUtils {
+    /**
+     * Collect a response by messages.
+     * @param channel The channel to collect messages on.
+     * @param filter Filter which takes an incoming message and returns a boolean as to whether the message should be collected or not.
+     * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
+     * @param retrieve Method which takes a collected message and returns a desired result, or `undefined` if invalid.
+     * @param expire Method which is run if the timer expires.
+     * @param options Options to use for collecting.
+     */
     public static async collectByMessage(
         channel: TextChannel | DMChannel | NewsChannel,
         filter: MessageFilter,
@@ -63,6 +72,15 @@ export abstract class CollectorUtils {
         });
     }
 
+    /**
+     * Collect a response by reactions.
+     * @param msg The message to collect reactions on.
+     * @param filter Filter which takes an incoming reaction and returns a boolean as to whether the reaction should be collected or not.
+     * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
+     * @param retrieve Method which takes a collected reaction and returns a desired result, or `undefined` if invalid.
+     * @param expire Method which is run if the timer expires.
+     * @param options Options to use for collecting.
+     */
     public static async collectByReaction(
         msg: Message,
         filter: ReactionFilter,
