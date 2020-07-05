@@ -28,6 +28,7 @@ export abstract class CollectorUtils {
      * @param retrieve Method which takes a collected message and returns a desired result, or `undefined` if invalid.
      * @param expire Method which is run if the timer expires.
      * @param options Options to use for collecting.
+     * @returns A desired result, or `undefined` if the collector expired.
      */
     public static async collectByMessage(
         channel: TextChannel | DMChannel | NewsChannel,
@@ -80,6 +81,7 @@ export abstract class CollectorUtils {
      * @param retrieve Method which takes a collected reaction and returns a desired result, or `undefined` if invalid.
      * @param expire Method which is run if the timer expires.
      * @param options Options to use for collecting.
+     * @returns A desired result, or `undefined` if the collector expired.
      */
     public static async collectByReaction(
         msg: Message,
