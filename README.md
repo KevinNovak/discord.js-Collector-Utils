@@ -19,7 +19,7 @@ import { CollectorUtils } from 'discord.js-collector-utils';
 ```typescript
 await msg.channel.send('What is your favorite color?');
 
-let favoriteColor = await CollectorUtils.collectByMessage(
+let favoriteColor: string = await CollectorUtils.collectByMessage(
     msg.channel,
     // Collect Filter
     (nextMsg: Message) => nextMsg.author.id === msg.author.id,
@@ -70,7 +70,7 @@ prompt.react('🍉');
 prompt.react('🍎');
 prompt.react('🍌');
 
-let favoriteFruit = await CollectorUtils.collectByReaction(
+let favoriteFruit: string = await CollectorUtils.collectByReaction(
     prompt,
     // Collect Filter
     (msgReaction: MessageReaction, reactor: User) => reactor.id === msg.author.id,
