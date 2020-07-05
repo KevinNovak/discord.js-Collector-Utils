@@ -1,6 +1,6 @@
 {
     "name": "discord.js-collector-utils",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "author": "Kevin Novak",
     "description": "Collector extensions for discord.js.",
     "license": "MIT",
