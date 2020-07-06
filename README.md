@@ -53,7 +53,7 @@ let favoriteColor: string = await CollectorUtils.collectByMessage(
         await msg.channel.send(`Too slow! Try being more decisive next time.`);
     },
     // Options
-    { time: 10000, resetInvalid: true }
+    { time: 10000, reset: true }
 );
 
 if (favoriteColor === undefined) {
@@ -98,7 +98,7 @@ let favoriteFruit: string = await CollectorUtils.collectByReaction(
         await msg.channel.send('Too slow! Try being more decisive next time.');
     },
     // Options
-    { time: 10000, resetInvalid: true }
+    { time: 10000, reset: true }
 );
 
 if (favoriteFruit === undefined) {

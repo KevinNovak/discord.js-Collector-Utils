@@ -9,14 +9,9 @@ export declare type ReactionRetriever = (
 ) => Promise<any | undefined>;
 export declare type ExpireFunction = () => Promise<any>;
 
-export declare interface CollectByMessageOptions {
+export declare interface CollectOptions {
     time: number;
-    resetInvalid: boolean;
-}
-
-export declare interface CollectByReactionOptions {
-    time: number;
-    resetInvalid: boolean;
+    reset: boolean;
 }
 
 export abstract class CollectorUtils {
@@ -36,7 +31,7 @@ export abstract class CollectorUtils {
         stopFilter: MessageFilter,
         retrieve: MessageRetriever,
         expire: ExpireFunction,
-        options: CollectByMessageOptions = { time: 60000, resetInvalid: false }
+        options: CollectOptions = { time: 60000, reset: false }
     ): Promise<any> {
         return new Promise(async (resolve, reject) => {
             let collector = channel.createMessageCollector(filter, { time: options.time });
@@ -53,7 +48,7 @@ export abstract class CollectorUtils {
 
                 let result = await retrieve(nextMsg);
                 if (result === undefined) {
-                    if (options.resetInvalid) {
+                    if (options.reset) {
                         collector.resetTimer();
                     }
                     return;
@@ -89,7 +84,7 @@ export abstract class CollectorUtils {
         stopFilter: MessageFilter,
         retrieve: ReactionRetriever,
         expire: ExpireFunction,
-        options: CollectByReactionOptions = { time: 60000, resetInvalid: false }
+        options: CollectOptions = { time: 60000, reset: false }
     ): Promise<any> {
         return new Promise(async (resolve, reject) => {
             let reactionCollector = msg.createReactionCollector(filter, { time: options.time });
@@ -105,7 +100,7 @@ export abstract class CollectorUtils {
             reactionCollector.on('collect', async (msgReaction: MessageReaction, reactor: User) => {
                 let result = await retrieve(msgReaction, reactor);
                 if (result === undefined) {
-                    if (options.resetInvalid) {
+                    if (options.reset) {
                         reactionCollector.resetTimer();
                         msgCollector.resetTimer();
                     }
