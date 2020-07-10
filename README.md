@@ -1,6 +1,7 @@
 # discord.js-Collector-Utils
 
 [![NPM Version](https://img.shields.io/npm/v/discord.js-collector-utils.svg?maxAge=3600)](https://www.npmjs.com/package/discord.js-collector-utils)
+[![NPM Version](https://img.shields.io/npm/dt/discord.js-collector-utils.svg?maxAge=3600)](https://www.npmjs.com/package/discord.js-collector-utils)
 
 Collector utilities for [discord.js](https://github.com/discordjs/discord.js/).
 
