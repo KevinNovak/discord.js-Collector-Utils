@@ -34,37 +34,52 @@ export abstract class CollectorUtils {
         options: CollectOptions = { time: 60000, reset: false }
     ): Promise<any> {
         return new Promise(async (resolve, reject) => {
-            let collector = channel.createMessageCollector(filter, { time: options.time });
-            let expired = true;
+            try {
+                let collector = channel.createMessageCollector(filter, { time: options.time });
+                let expired = true;
 
-            collector.on('collect', async (nextMsg: Message) => {
-                let stop = stopFilter(nextMsg);
-                if (stop) {
-                    expired = false;
-                    collector.stop();
-                    resolve(undefined);
-                    return;
-                }
+                collector.on('collect', async (nextMsg: Message) => {
+                    try {
+                        let stop = stopFilter(nextMsg);
+                        if (stop) {
+                            expired = false;
+                            collector.stop();
+                            resolve(undefined);
+                            return;
+                        }
 
-                let result = await retrieve(nextMsg);
-                if (result === undefined) {
-                    if (options.reset) {
-                        collector.resetTimer();
+                        let result = await retrieve(nextMsg);
+                        if (result === undefined) {
+                            if (options.reset) {
+                                collector.resetTimer();
+                            }
+                            return;
+                        } else {
+                            expired = false;
+                            collector.stop();
+                            resolve(result);
+                            return;
+                        }
+                    } catch (error) {
+                        reject(error);
+                        return;
                     }
-                    return;
-                } else {
-                    expired = false;
-                    collector.stop();
-                    resolve(result);
-                    return;
-                }
-            });
+                });
 
-            collector.on('end', async collected => {
-                if (expired) {
-                    await expire();
-                }
-            });
+                collector.on('end', async collected => {
+                    try {
+                        if (expired) {
+                            await expire();
+                        }
+                    } catch (error) {
+                        reject(error);
+                        return;
+                    }
+                });
+            } catch (error) {
+                reject(error);
+                return;
+            }
         });
     }
 
@@ -87,48 +102,71 @@ export abstract class CollectorUtils {
         options: CollectOptions = { time: 60000, reset: false }
     ): Promise<any> {
         return new Promise(async (resolve, reject) => {
-            let reactionCollector = msg.createReactionCollector(filter, { time: options.time });
+            try {
+                let reactionCollector = msg.createReactionCollector(filter, { time: options.time });
 
-            let msgCollector = msg.channel.createMessageCollector(
-                (nextMsg: Message) => true,
-                // Make sure message collector is ahead of reaction collector
-                { time: options.time + 1000 }
-            );
+                let msgCollector = msg.channel.createMessageCollector(
+                    (nextMsg: Message) => true,
+                    // Make sure message collector is ahead of reaction collector
+                    { time: options.time + 1000 }
+                );
 
-            let expired = true;
+                let expired = true;
 
-            reactionCollector.on('collect', async (msgReaction: MessageReaction, reactor: User) => {
-                let result = await retrieve(msgReaction, reactor);
-                if (result === undefined) {
-                    if (options.reset) {
-                        reactionCollector.resetTimer();
-                        msgCollector.resetTimer();
+                reactionCollector.on(
+                    'collect',
+                    async (msgReaction: MessageReaction, reactor: User) => {
+                        try {
+                            let result = await retrieve(msgReaction, reactor);
+                            if (result === undefined) {
+                                if (options.reset) {
+                                    reactionCollector.resetTimer();
+                                    msgCollector.resetTimer();
+                                }
+                                return;
+                            } else {
+                                expired = false;
+                                reactionCollector.stop();
+                                resolve(result);
+                                return;
+                            }
+                        } catch (error) {
+                            reject(error);
+                            return;
+                        }
                     }
-                    return;
-                } else {
-                    expired = false;
-                    reactionCollector.stop();
-                    resolve(result);
-                    return;
-                }
-            });
+                );
 
-            reactionCollector.on('end', async collected => {
-                msgCollector.stop();
-                if (expired) {
-                    await expire();
-                }
-            });
+                reactionCollector.on('end', async collected => {
+                    try {
+                        msgCollector.stop();
+                        if (expired) {
+                            await expire();
+                        }
+                    } catch (error) {
+                        reject(error);
+                        return;
+                    }
+                });
 
-            msgCollector.on('collect', async (nextMsg: Message) => {
-                let stop = stopFilter(nextMsg);
-                if (stop) {
-                    expired = false;
-                    reactionCollector.stop();
-                    resolve(undefined);
-                    return;
-                }
-            });
+                msgCollector.on('collect', async (nextMsg: Message) => {
+                    try {
+                        let stop = stopFilter(nextMsg);
+                        if (stop) {
+                            expired = false;
+                            reactionCollector.stop();
+                            resolve(undefined);
+                            return;
+                        }
+                    } catch (error) {
+                        reject(error);
+                        return;
+                    }
+                });
+            } catch (error) {
+                reject(error);
+                return;
+            }
         });
     }
 }
