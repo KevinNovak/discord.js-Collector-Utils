@@ -1,6 +1,6 @@
 {
     "name": "discord.js-collector-utils",
-    "version": "1.0.15",
+    "version": "1.0.16",
     "author": "Kevin Novak",
     "description": "Collector utilities for discord.js.",
     "license": "MIT",
@@ -11,7 +11,7 @@
         "pack": "npm pack"
     },
     "dependencies": {
-        "discord.js": "12.3.1"
+        "discord.js": "12.4.0"
     },
     "devDependencies": {
         "@types/node": "14.11.10",
