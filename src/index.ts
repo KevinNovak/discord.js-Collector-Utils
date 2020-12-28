@@ -14,7 +14,7 @@ export declare interface CollectOptions {
     reset: boolean;
 }
 
-export abstract class CollectorUtils {
+export class CollectorUtils {
     /**
      * Collect a response by messages.
      * @param channel The channel to collect messages on.
