@@ -11,7 +11,8 @@
         "lint:fix": "tslint --fix --project .",
         "format": "prettier --check .",
         "format:fix": "prettier --write .",
-        "build": "tsc"
+        "build": "tsc",
+        "test": "npm run build && node --enable-source-maps dist/test.js"
     },
     "dependencies": {
         "discord.js": "12.5.1"
