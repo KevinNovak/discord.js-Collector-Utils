@@ -12,6 +12,7 @@ export declare type ExpireFunction = () => Promise<any>;
 export declare interface CollectOptions {
     time: number;
     reset: boolean;
+    max?: number;
 }
 
 export class CollectorUtils {
@@ -31,10 +32,13 @@ export class CollectorUtils {
         stopFilter: MessageFilter,
         retrieve: MessageRetriever,
         expire: ExpireFunction,
-        options: CollectOptions = { time: 60000, reset: false }
+        options: CollectOptions = { time: 60000, reset: false, max: Infinity }
     ): Promise<any> {
-        return new Promise(async (resolve, reject) => {
-            let collector = channel.createMessageCollector(filter, { time: options.time });
+        return new Promise(async resolve => {
+            let collector = channel.createMessageCollector(filter, {
+                time: options.time,
+                max: options.max,
+            });
             let expired = true;
 
             collector.on('collect', async (nextMsg: Message) => {
@@ -60,7 +64,7 @@ export class CollectorUtils {
                 }
             });
 
-            collector.on('end', async collected => {
+            collector.on('end', async () => {
                 if (expired) {
                     await expire();
                 }
@@ -84,13 +88,16 @@ export class CollectorUtils {
         stopFilter: MessageFilter,
         retrieve: ReactionRetriever,
         expire: ExpireFunction,
-        options: CollectOptions = { time: 60000, reset: false }
+        options: CollectOptions = { time: 60000, reset: false, max: Infinity }
     ): Promise<any> {
-        return new Promise(async (resolve, reject) => {
-            let reactionCollector = msg.createReactionCollector(filter, { time: options.time });
+        return new Promise(async resolve => {
+            let reactionCollector = msg.createReactionCollector(filter, {
+                time: options.time,
+                max: options.max,
+            });
 
             let msgCollector = msg.channel.createMessageCollector(
-                (nextMsg: Message) => true,
+                () => true,
                 // Make sure message collector is ahead of reaction collector
                 { time: options.time + 1000 }
             );
@@ -113,7 +120,7 @@ export class CollectorUtils {
                 }
             });
 
-            reactionCollector.on('end', async collected => {
+            reactionCollector.on('end', async () => {
                 msgCollector.stop();
                 if (expired) {
                     await expire();

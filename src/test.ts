@@ -67,6 +67,28 @@ client.on('message', async msg => {
             prompt.react('🍎');
             prompt.react('🍌');
 
+            /* Users Voting Example
+                prompt.react('✅');
+                await CollectorUtils.collectByReaction(
+                    prompt,
+                    // Collect Filter
+                    (msgReaction: MessageReaction, reactor: User) => reactor.bot === false,
+                    // Stop Filter
+                    (nextMsg: Message) =>
+                        nextMsg.author.id === msg.author.id && nextMsg.content === 'stop',
+                    // Retrieve Result
+                    async (msgReaction: MessageReaction, reactor: User) => {
+                        console.log('ok');
+                    },
+                    // Expire Function
+                    async () => {
+                        await msg.channel.send('Voting finished!');
+                    },
+                    // Options
+                    { time: 10000, reset: true, max: 2 }
+                );
+            */
+
             let favoriteFruit: string = await CollectorUtils.collectByReaction(
                 prompt,
                 // Collect Filter
