@@ -1,4 +1,4 @@
-import { DMChannel, Message, MessageReaction, NewsChannel, TextChannel, User } from 'discord.js';
+import { Message, MessageReaction, TextBasedChannels, User } from 'discord.js';
 
 export declare type MessageFilter = (nextMsg: Message) => boolean;
 export declare type ReactionFilter = (msgReaction: MessageReaction, reactor: User) => boolean;
@@ -26,7 +26,7 @@ export class CollectorUtils {
      * @returns A desired result, or `undefined` if the collector expired.
      */
     public static async collectByMessage(
-        channel: TextChannel | DMChannel | NewsChannel,
+        channel: TextBasedChannels,
         filter: MessageFilter,
         stopFilter: MessageFilter,
         retrieve: MessageRetriever,
@@ -34,7 +34,7 @@ export class CollectorUtils {
         options: CollectOptions = { time: 60000, reset: false }
     ): Promise<any> {
         return new Promise(async (resolve, reject) => {
-            let collector = channel.createMessageCollector(filter, { time: options.time });
+            let collector = channel.createMessageCollector({ filter, time: options.time });
             let expired = true;
 
             collector.on('collect', async (nextMsg: Message) => {
@@ -87,12 +87,11 @@ export class CollectorUtils {
         options: CollectOptions = { time: 60000, reset: false }
     ): Promise<any> {
         return new Promise(async (resolve, reject) => {
-            let reactionCollector = msg.createReactionCollector(filter, { time: options.time });
+            let reactionCollector = msg.createReactionCollector({ filter, time: options.time });
 
             let msgCollector = msg.channel.createMessageCollector(
-                (nextMsg: Message) => true,
                 // Make sure message collector is ahead of reaction collector
-                { time: options.time + 1000 }
+                { filter: (nextMsg: Message) => true, time: options.time + 1000 }
             );
 
             let expired = true;

@@ -1,15 +1,21 @@
-import { Client, Message, MessageReaction, User } from 'discord.js';
+import { Client, Intents, Message, MessageReaction, User } from 'discord.js';
 import { CollectorUtils } from '.';
 
 let Config = require('../config/config.json');
 
-let client = new Client();
+let client = new Client({
+    intents: [
+        Intents.FLAGS.GUILDS,
+        Intents.FLAGS.GUILD_MESSAGES,
+        Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    ],
+});
 
 client.on('ready', () => {
     console.log(`Logged in as '${client.user.tag}'!`);
 });
 
-client.on('message', async msg => {
+client.on('messageCreate', async msg => {
     let args = msg.content.split(' ');
     switch (args[0]) {
         case 'testMessage': {
