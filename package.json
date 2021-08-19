@@ -12,6 +12,7 @@
         "format": "prettier --check .",
         "format:fix": "prettier --write .",
         "build": "tsc",
+        "prepare": "rm -rf dist && npm run build",
         "test": "npm run build && node --enable-source-maps dist/test.js"
     },
     "peerDependencies": {
