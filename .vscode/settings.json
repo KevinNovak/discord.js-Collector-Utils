@@ -7,5 +7,7 @@
     },
     "[typescript]": {
         "editor.formatOnSave": true
-    }
+    },
+    "cSpell.enabled": true,
+    "cSpell.words": ["Novak", "parens"]
 }
