@@ -1,4 +1,4 @@
-import { Message, MessageReaction, TextBasedChannels, User } from 'discord.js';
+import { Message, MessageReaction, TextBasedChannel, User } from 'discord.js';
 
 export declare type MessageFilter = (nextMsg: Message) => boolean;
 export declare type ReactionFilter = (msgReaction: MessageReaction, reactor: User) => boolean;
@@ -26,7 +26,7 @@ export class CollectorUtils {
      * @returns A desired result, or `undefined` if the collector expired.
      */
     public static async collectByMessage(
-        channel: TextBasedChannels,
+        channel: TextBasedChannel,
         filter: MessageFilter,
         stopFilter: MessageFilter,
         retrieve: MessageRetriever,
