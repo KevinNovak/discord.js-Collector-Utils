@@ -1,12 +1,14 @@
-import { Message, MessageReaction, TextBasedChannel, User } from 'discord.js';
+import { Interaction, Message, MessageReaction, TextBasedChannel, User } from 'discord.js';
 
 export declare type MessageFilter = (nextMsg: Message) => boolean;
 export declare type ReactionFilter = (msgReaction: MessageReaction, reactor: User) => boolean;
+export declare type InteractionFilter = (intr: Interaction) => boolean;
 export declare type MessageRetriever = (nextMsg: Message) => Promise<any | undefined>;
 export declare type ReactionRetriever = (
     msgReaction: MessageReaction,
     reactor: User
 ) => Promise<any | undefined>;
+export declare type InteractionRetriever = (intr: Interaction) => Promise<any | undefined>;
 export declare type ExpireFunction = () => Promise<any>;
 
 export declare interface CollectOptions {
@@ -124,6 +126,72 @@ export class CollectorUtils {
                 if (stop) {
                     expired = false;
                     reactionCollector.stop();
+                    resolve(undefined);
+                    return;
+                }
+            });
+        });
+    }
+
+    /**
+     * Collect a response by buttons.
+     * @param msg The message to collect button interactions on.
+     * @param filter Filter which takes an incoming interaction and returns a boolean as to whether the interaction should be collected or not.
+     * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
+     * @param retrieve Method which takes a collected interaction and returns a desired result, or `undefined` if invalid.
+     * @param expire Method which is run if the timer expires.
+     * @param options Options to use for collecting.
+     * @returns A desired result, or `undefined` if the collector expired.
+     */
+    public static async collectByButton(
+        msg: Message,
+        filter: InteractionFilter,
+        stopFilter: MessageFilter,
+        retrieve: InteractionRetriever,
+        expire: ExpireFunction,
+        options: CollectOptions = { time: 60000, reset: false }
+    ): Promise<any> {
+        return new Promise(async (resolve, reject) => {
+            let buttonCollector = msg.createMessageComponentCollector({
+                filter,
+                time: options.time,
+            });
+
+            let msgCollector = msg.channel.createMessageCollector(
+                // Make sure message collector is ahead of reaction collector
+                { filter: (nextMsg: Message) => true, time: options.time + 1000 }
+            );
+
+            let expired = true;
+
+            buttonCollector.on('collect', async (intr: Interaction) => {
+                let result = await retrieve(intr);
+                if (result === undefined) {
+                    if (options.reset) {
+                        buttonCollector.resetTimer();
+                        msgCollector.resetTimer();
+                    }
+                    return;
+                } else {
+                    expired = false;
+                    buttonCollector.stop();
+                    resolve(result);
+                    return;
+                }
+            });
+
+            buttonCollector.on('end', async collected => {
+                msgCollector.stop();
+                if (expired) {
+                    await expire();
+                }
+            });
+
+            msgCollector.on('collect', async (nextMsg: Message) => {
+                let stop = stopFilter(nextMsg);
+                if (stop) {
+                    expired = false;
+                    buttonCollector.stop();
                     resolve(undefined);
                     return;
                 }
