@@ -1,14 +1,14 @@
-import { Interaction, Message, MessageReaction, TextBasedChannel, User } from 'discord.js';
+import { ButtonInteraction, Message, MessageReaction, TextBasedChannel, User } from 'discord.js';
 
 export declare type MessageFilter = (nextMsg: Message) => boolean;
 export declare type ReactionFilter = (msgReaction: MessageReaction, reactor: User) => boolean;
-export declare type InteractionFilter = (intr: Interaction) => boolean;
+export declare type ButtonFilter = (intr: ButtonInteraction) => boolean;
 export declare type MessageRetriever = (nextMsg: Message) => Promise<any | undefined>;
 export declare type ReactionRetriever = (
     msgReaction: MessageReaction,
     reactor: User
 ) => Promise<any | undefined>;
-export declare type InteractionRetriever = (intr: Interaction) => Promise<any | undefined>;
+export declare type ButtonRetriever = (intr: ButtonInteraction) => Promise<any | undefined>;
 export declare type ExpireFunction = () => Promise<any>;
 
 export declare interface CollectOptions {
@@ -145,14 +145,15 @@ export class CollectorUtils {
      */
     public static async collectByButton(
         msg: Message,
-        filter: InteractionFilter,
+        filter: ButtonFilter,
         stopFilter: MessageFilter,
-        retrieve: InteractionRetriever,
+        retrieve: ButtonRetriever,
         expire: ExpireFunction,
         options: CollectOptions = { time: 60000, reset: false }
     ): Promise<any> {
         return new Promise(async (resolve, reject) => {
             let buttonCollector = msg.createMessageComponentCollector({
+                componentType: 'BUTTON',
                 filter,
                 time: options.time,
             });
@@ -164,7 +165,7 @@ export class CollectorUtils {
 
             let expired = true;
 
-            buttonCollector.on('collect', async (intr: Interaction) => {
+            buttonCollector.on('collect', async (intr: ButtonInteraction) => {
                 let result = await retrieve(intr);
                 if (result === undefined) {
                     if (options.reset) {

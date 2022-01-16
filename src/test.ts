@@ -1,4 +1,4 @@
-import { Client, Intents, Message, MessageReaction, User } from 'discord.js';
+import { ButtonInteraction, Client, Intents, Message, MessageReaction, User } from 'discord.js';
 import { CollectorUtils } from '.';
 
 let Config = require('../config/config.json');
@@ -88,6 +88,72 @@ client.on('messageCreate', async msg => {
                         case '🍎':
                             return 'Apple';
                         case '🍌':
+                            return 'Banana';
+                        default:
+                            return;
+                    }
+                },
+                // Expire Function
+                async () => {
+                    await msg.channel.send('Too slow! Try being more decisive next time.');
+                },
+                // Options
+                { time: 10000, reset: true }
+            );
+
+            if (favoriteFruit === undefined) {
+                return;
+            }
+
+            await msg.channel.send(`You selected **${favoriteFruit}**. Nice choice!`);
+            return;
+        }
+
+        case 'testButton': {
+            let prompt = await msg.channel.send({
+                content: 'Please select your favorite fruit!',
+                components: [
+                    {
+                        type: 'ACTION_ROW',
+                        components: [
+                            {
+                                type: 'BUTTON',
+                                customId: 'watermelon',
+                                emoji: '🍉',
+                                style: 'PRIMARY',
+                            },
+                            {
+                                type: 'BUTTON',
+                                customId: 'apple',
+                                emoji: '🍎',
+                                style: 'PRIMARY',
+                            },
+                            {
+                                type: 'BUTTON',
+                                customId: 'banana',
+                                emoji: '🍌',
+                                style: 'PRIMARY',
+                            },
+                        ],
+                    },
+                ],
+            });
+
+            let favoriteFruit: string = await CollectorUtils.collectByButton(
+                prompt,
+                // Collect Filter
+                (intr: ButtonInteraction) => intr.user.id === msg.author.id,
+                // Stop Filter
+                (nextMsg: Message) =>
+                    nextMsg.author.id === msg.author.id && nextMsg.content === 'stop',
+                // Retrieve Result
+                async (intr: ButtonInteraction) => {
+                    switch (intr.customId) {
+                        case 'watermelon':
+                            return 'Watermelon';
+                        case 'apple':
+                            return 'Apple';
+                        case 'banana':
                             return 'Banana';
                         default:
                             return;
