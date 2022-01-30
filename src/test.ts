@@ -152,40 +152,39 @@ async function start(): Promise<void> {
                     ],
                 });
 
-                let { btnIntr, result }: { btnIntr: ButtonInteraction; result: string } =
-                    await CollectorUtils.collectByButton(
-                        prompt,
-                        // Collect Filter
-                        (intr: ButtonInteraction) => intr.user.id === intr.user.id,
-                        // Stop Filter
-                        (nextMsg: Message) =>
-                            nextMsg.author.id === msg.author.id && nextMsg.content === 'stop',
-                        // Retrieve Result
-                        async (btnIntr: ButtonInteraction) => {
-                            switch (btnIntr.customId) {
-                                case 'watermelon':
-                                    return { btnIntr, result: 'Watermelon' };
-                                case 'apple':
-                                    return { btnIntr, result: 'Apple' };
-                                case 'banana':
-                                    return { btnIntr, result: 'Banana' };
-                                default:
-                                    return;
-                            }
-                        },
-                        // Expire Function
-                        async () => {
-                            await msg.channel.send('Too slow! Try being more decisive next time.');
-                        },
-                        // Options
-                        { time: 10000, reset: true }
-                    );
+                let result = await CollectorUtils.collectByButton(
+                    prompt,
+                    // Collect Filter
+                    (intr: ButtonInteraction) => intr.user.id === intr.user.id,
+                    // Stop Filter
+                    (nextMsg: Message) =>
+                        nextMsg.author.id === msg.author.id && nextMsg.content === 'stop',
+                    // Retrieve Result
+                    async (intr: ButtonInteraction) => {
+                        switch (intr.customId) {
+                            case 'watermelon':
+                                return { intr, value: 'Watermelon' };
+                            case 'apple':
+                                return { intr, value: 'Apple' };
+                            case 'banana':
+                                return { intr, value: 'Banana' };
+                            default:
+                                return;
+                        }
+                    },
+                    // Expire Function
+                    async () => {
+                        await msg.channel.send('Too slow! Try being more decisive next time.');
+                    },
+                    // Options
+                    { time: 10000, reset: true }
+                );
 
                 if (result === undefined) {
                     return;
                 }
 
-                await btnIntr.reply(`You selected **${result}**. Nice choice!`);
+                await result.intr.reply(`You selected **${result.value}**. Nice choice!`);
                 return;
             }
 

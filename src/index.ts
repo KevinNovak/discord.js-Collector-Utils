@@ -8,7 +8,10 @@ export declare type ReactionRetriever = (
     msgReaction: MessageReaction,
     reactor: User
 ) => Promise<any | undefined>;
-export declare type ButtonRetriever = (intr: ButtonInteraction) => Promise<any | undefined>;
+export declare type ButtonRetriever = (intr: ButtonInteraction) => Promise<{
+    intr: ButtonInteraction;
+    value: any;
+}>;
 export declare type ExpireFunction = () => Promise<any>;
 
 export declare interface CollectOptions {
@@ -150,7 +153,13 @@ export class CollectorUtils {
         retrieve: ButtonRetriever,
         expire: ExpireFunction,
         options: CollectOptions = { time: 60000, reset: false }
-    ): Promise<any> {
+    ): Promise<
+        | {
+              intr: ButtonInteraction;
+              value: any;
+          }
+        | undefined
+    > {
         return new Promise(async (resolve, reject) => {
             let buttonCollector = msg.createMessageComponentCollector({
                 componentType: 'BUTTON',
