@@ -155,7 +155,7 @@ async function start(): Promise<void> {
                 let result = await CollectorUtils.collectByButton(
                     prompt,
                     // Collect Filter
-                    (intr: ButtonInteraction) => intr.user.id === intr.user.id,
+                    (intr: ButtonInteraction) => intr.user.id === msg.author.id,
                     // Stop Filter
                     (nextMsg: Message) =>
                         nextMsg.author.id === msg.author.id && nextMsg.content === 'stop',
