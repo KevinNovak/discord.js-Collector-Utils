@@ -18,7 +18,7 @@ import { CollectorUtils } from 'discord.js-collector-utils';
 
 ## `collectByMessage` Example
 
-![](https://i.imgur.com/BrOic5W.png)
+![](https://i.imgur.com/AOFApbY.png)
 
 ```typescript
 await msg.channel.send('What is your favorite color?');
@@ -67,7 +67,7 @@ await msg.channel.send(`You selected **${favoriteColor}**. Nice choice!`);
 
 ## `collectByReaction` Example
 
-![](https://i.imgur.com/SWJdQJc.png)
+![](https://i.imgur.com/Vo9kXeI.png)
 
 ```typescript
 let prompt = await msg.channel.send('Please select your favorite fruit!');
