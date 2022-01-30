@@ -3,14 +3,14 @@ import { ButtonInteraction, Message, MessageReaction, TextBasedChannel, User } f
 export declare type MessageFilter = (nextMsg: Message) => boolean;
 export declare type ReactionFilter = (msgReaction: MessageReaction, reactor: User) => boolean;
 export declare type ButtonFilter = (intr: ButtonInteraction) => boolean;
-export declare type MessageRetriever = (nextMsg: Message) => Promise<any | undefined>;
-export declare type ReactionRetriever = (
+export declare type MessageRetriever<T> = (nextMsg: Message) => Promise<T | undefined>;
+export declare type ReactionRetriever<T> = (
     msgReaction: MessageReaction,
     reactor: User
-) => Promise<any | undefined>;
-export declare type ButtonRetriever = (intr: ButtonInteraction) => Promise<{
+) => Promise<T | undefined>;
+export declare type ButtonRetriever<T> = (intr: ButtonInteraction) => Promise<{
     intr: ButtonInteraction;
-    value: any;
+    value: T;
 }>;
 export declare type ExpireFunction = () => Promise<any>;
 
@@ -30,14 +30,14 @@ export class CollectorUtils {
      * @param options Options to use for collecting.
      * @returns A desired result, or `undefined` if the collector expired.
      */
-    public static async collectByMessage(
+    public static async collectByMessage<T>(
         channel: TextBasedChannel,
         filter: MessageFilter,
         stopFilter: MessageFilter,
-        retrieve: MessageRetriever,
+        retrieve: MessageRetriever<T>,
         expire: ExpireFunction,
         options: CollectOptions = { time: 60000, reset: false }
-    ): Promise<any> {
+    ): Promise<T> {
         return new Promise(async (resolve, reject) => {
             let collector = channel.createMessageCollector({ filter, time: options.time });
             let expired = true;
@@ -83,14 +83,14 @@ export class CollectorUtils {
      * @param options Options to use for collecting.
      * @returns A desired result, or `undefined` if the collector expired.
      */
-    public static async collectByReaction(
+    public static async collectByReaction<T>(
         msg: Message,
         filter: ReactionFilter,
         stopFilter: MessageFilter,
-        retrieve: ReactionRetriever,
+        retrieve: ReactionRetriever<T>,
         expire: ExpireFunction,
         options: CollectOptions = { time: 60000, reset: false }
-    ): Promise<any> {
+    ): Promise<T> {
         return new Promise(async (resolve, reject) => {
             let reactionCollector = msg.createReactionCollector({ filter, time: options.time });
 
@@ -146,17 +146,17 @@ export class CollectorUtils {
      * @param options Options to use for collecting.
      * @returns A desired result, or `undefined` if the collector expired.
      */
-    public static async collectByButton(
+    public static async collectByButton<T>(
         msg: Message,
         filter: ButtonFilter,
         stopFilter: MessageFilter,
-        retrieve: ButtonRetriever,
+        retrieve: ButtonRetriever<T>,
         expire: ExpireFunction,
         options: CollectOptions = { time: 60000, reset: false }
     ): Promise<
         | {
               intr: ButtonInteraction;
-              value: any;
+              value: T;
           }
         | undefined
     > {
