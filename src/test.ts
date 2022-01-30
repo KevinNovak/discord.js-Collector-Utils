@@ -16,18 +16,19 @@ async function start(): Promise<void> {
         console.log(`Logged in as '${client.user.tag}'!`);
     });
 
-    client.on('message', async (msg: Message) => {
+    client.on('messageCreate', async (msg: Message) => {
         let args = msg.content.split(' ');
-        if (args.length < 2) {
-            return;
-        }
-
         let command = args[0];
         if (command !== 'test') {
             return;
         }
 
         let subCommand = args[1];
+        if (!subCommand) {
+            await msg.channel.send('Please supply a test to run.');
+            return;
+        }
+
         switch (subCommand) {
             case 'message': {
                 await msg.channel.send('What is your favorite color?');
@@ -186,6 +187,10 @@ async function start(): Promise<void> {
 
                 await btnIntr.reply(`You selected **${result}**. Nice choice!`);
                 return;
+            }
+
+            default: {
+                await msg.channel.send('Unknown test.');
             }
         }
     });
