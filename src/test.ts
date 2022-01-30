@@ -131,7 +131,7 @@ async function start(): Promise<void> {
             }
 
             case 'button': {
-                let prompt = await intr.followup({
+                let prompt = await intr.followUp({
                     content: 'Please select your favorite fruit!',
                     components: [
                         {
