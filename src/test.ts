@@ -160,39 +160,40 @@ async function start(): Promise<void> {
                     ],
                 });
 
-                let favoriteFruit: string = await CollectorUtils.collectByButton(
-                    prompt,
-                    // Collect Filter
-                    (intr: ButtonInteraction) => intr.user.id === intr.user.id,
-                    // Stop Filter
-                    (nextMsg: Message) =>
-                        nextMsg.author.id === intr.user.id && nextMsg.content === 'stop',
-                    // Retrieve Result
-                    async (intr: ButtonInteraction) => {
-                        switch (intr.customId) {
-                            case 'watermelon':
-                                return 'Watermelon';
-                            case 'apple':
-                                return 'Apple';
-                            case 'banana':
-                                return 'Banana';
-                            default:
-                                return;
-                        }
-                    },
-                    // Expire Function
-                    async () => {
-                        await intr.followUp('Too slow! Try being more decisive next time.');
-                    },
-                    // Options
-                    { time: 10000, reset: true }
-                );
+                let { btnIntr, result }: { btnIntr: ButtonInteraction; result: string } =
+                    await CollectorUtils.collectByButton(
+                        prompt,
+                        // Collect Filter
+                        (intr: ButtonInteraction) => intr.user.id === intr.user.id,
+                        // Stop Filter
+                        (nextMsg: Message) =>
+                            nextMsg.author.id === intr.user.id && nextMsg.content === 'stop',
+                        // Retrieve Result
+                        async (btnIntr: ButtonInteraction) => {
+                            switch (btnIntr.customId) {
+                                case 'watermelon':
+                                    return { btnIntr, result: 'Watermelon' };
+                                case 'apple':
+                                    return { btnIntr, result: 'Apple' };
+                                case 'banana':
+                                    return { btnIntr, result: 'Banana' };
+                                default:
+                                    return;
+                            }
+                        },
+                        // Expire Function
+                        async () => {
+                            await intr.followUp('Too slow! Try being more decisive next time.');
+                        },
+                        // Options
+                        { time: 10000, reset: true }
+                    );
 
-                if (favoriteFruit === undefined) {
+                if (result === undefined) {
                     return;
                 }
 
-                await intr.followUp(`You selected **${favoriteFruit}**. Nice choice!`);
+                await btnIntr.reply(`You selected **${result}**. Nice choice!`);
                 return;
             }
         }
