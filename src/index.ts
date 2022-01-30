@@ -7,7 +7,7 @@ export declare type ReactionRetriever<T> = (
     msgReaction: MessageReaction,
     reactor: User
 ) => Promise<T | undefined>;
-export declare type ExpireFunction = () => Promise<any>;
+export declare type ExpireFunction = () => Promise<void>;
 
 export declare interface CollectOptions {
     time: number;
