@@ -1,16 +1,4 @@
-import { REST } from '@discordjs/rest';
-import { ApplicationCommandOptionType, Routes } from 'discord-api-types/v9';
-import {
-    ButtonInteraction,
-    ChatInputApplicationCommandData,
-    Client,
-    CommandInteraction,
-    Intents,
-    Interaction,
-    Message,
-    MessageReaction,
-    User,
-} from 'discord.js';
+import { ButtonInteraction, Client, Intents, Message, MessageReaction, User } from 'discord.js';
 import { CollectorUtils } from '.';
 
 let Config = require('../config/config.json');
@@ -28,28 +16,29 @@ async function start(): Promise<void> {
         console.log(`Logged in as '${client.user.tag}'!`);
     });
 
-    client.on('interactionCreate', async (intr: Interaction) => {
-        if (!(intr instanceof CommandInteraction)) {
+    client.on('message', async (msg: Message) => {
+        let args = msg.content.split(' ');
+        if (args.length < 2) {
             return;
         }
 
-        if (intr.commandName !== 'test') {
+        let command = args[0];
+        if (command !== 'test') {
             return;
         }
 
-        await intr.deferReply();
-
-        switch (intr.options.getString('name')) {
+        let subCommand = args[1];
+        switch (subCommand) {
             case 'message': {
-                await intr.followUp('What is your favorite color?');
+                await msg.channel.send('What is your favorite color?');
 
                 let favoriteColor: string = await CollectorUtils.collectByMessage(
-                    intr.channel,
+                    msg.channel,
                     // Collect Filter
-                    (nextMsg: Message) => nextMsg.author.id === intr.user.id,
+                    (nextMsg: Message) => nextMsg.author.id === msg.author.id,
                     // Stop Filter
                     (nextMsg: Message) =>
-                        nextMsg.author.id === intr.user.id &&
+                        nextMsg.author.id === msg.author.id &&
                         nextMsg.content.toLowerCase() === 'stop',
                     // Retrieve Result
                     async (nextMsg: Message) => {
@@ -60,12 +49,14 @@ async function start(): Promise<void> {
                         );
 
                         if (!favoriteColor) {
-                            await intr.followUp(`Sorry, that color is not an option.`);
+                            await msg.channel.send(`Sorry, that color is not an option.`);
                             return;
                         }
 
                         if (favoriteColor === 'yellow') {
-                            await intr.followUp(`Ew, **yellow**?! Please choose a better color.`);
+                            await msg.channel.send(
+                                `Ew, **yellow**?! Please choose a better color.`
+                            );
                             return;
                         }
 
@@ -73,7 +64,7 @@ async function start(): Promise<void> {
                     },
                     // Expire Function
                     async () => {
-                        await intr.followUp(`Too slow! Try being more decisive next time.`);
+                        await msg.channel.send(`Too slow! Try being more decisive next time.`);
                     },
                     // Options
                     { time: 10000, reset: true }
@@ -83,12 +74,12 @@ async function start(): Promise<void> {
                     return;
                 }
 
-                await intr.followUp(`You selected **${favoriteColor}**. Nice choice!`);
+                await msg.channel.send(`You selected **${favoriteColor}**. Nice choice!`);
                 return;
             }
 
             case 'reaction': {
-                let prompt = await intr.followUp('Please select your favorite fruit!');
+                let prompt = await msg.channel.send('Please select your favorite fruit!');
 
                 prompt.react('🍉');
                 prompt.react('🍎');
@@ -97,10 +88,10 @@ async function start(): Promise<void> {
                 let favoriteFruit: string = await CollectorUtils.collectByReaction(
                     prompt,
                     // Collect Filter
-                    (msgReaction: MessageReaction, reactor: User) => reactor.id === intr.user.id,
+                    (msgReaction: MessageReaction, reactor: User) => reactor.id === msg.author.id,
                     // Stop Filter
                     (nextMsg: Message) =>
-                        nextMsg.author.id === intr.user.id && nextMsg.content === 'stop',
+                        nextMsg.author.id === msg.author.id && nextMsg.content === 'stop',
                     // Retrieve Result
                     async (msgReaction: MessageReaction, reactor: User) => {
                         switch (msgReaction.emoji.name) {
@@ -116,7 +107,7 @@ async function start(): Promise<void> {
                     },
                     // Expire Function
                     async () => {
-                        await intr.followUp('Too slow! Try being more decisive next time.');
+                        await msg.channel.send('Too slow! Try being more decisive next time.');
                     },
                     // Options
                     { time: 10000, reset: true }
@@ -126,12 +117,12 @@ async function start(): Promise<void> {
                     return;
                 }
 
-                await intr.followUp(`You selected **${favoriteFruit}**. Nice choice!`);
+                await msg.channel.send(`You selected **${favoriteFruit}**. Nice choice!`);
                 return;
             }
 
             case 'button': {
-                let prompt = await intr.followUp({
+                let prompt = await msg.channel.send({
                     content: 'Please select your favorite fruit!',
                     components: [
                         {
@@ -167,7 +158,7 @@ async function start(): Promise<void> {
                         (intr: ButtonInteraction) => intr.user.id === intr.user.id,
                         // Stop Filter
                         (nextMsg: Message) =>
-                            nextMsg.author.id === intr.user.id && nextMsg.content === 'stop',
+                            nextMsg.author.id === msg.author.id && nextMsg.content === 'stop',
                         // Retrieve Result
                         async (btnIntr: ButtonInteraction) => {
                             switch (btnIntr.customId) {
@@ -183,7 +174,7 @@ async function start(): Promise<void> {
                         },
                         // Expire Function
                         async () => {
-                            await intr.followUp('Too slow! Try being more decisive next time.');
+                            await msg.channel.send('Too slow! Try being more decisive next time.');
                         },
                         // Options
                         { time: 10000, reset: true }
@@ -199,52 +190,7 @@ async function start(): Promise<void> {
         }
     });
 
-    let commands: ChatInputApplicationCommandData[] = [
-        {
-            name: 'test',
-            description: 'Run a test.',
-            options: [
-                {
-                    name: 'name',
-                    description: 'Name of the test to run.',
-                    required: true,
-                    type: ApplicationCommandOptionType.String.valueOf(),
-                    choices: [
-                        {
-                            name: 'message',
-                            value: 'message',
-                        },
-                        {
-                            name: 'reaction',
-                            value: 'reaction',
-                        },
-                        {
-                            name: 'button',
-                            value: 'button',
-                        },
-                    ],
-                },
-            ],
-        },
-    ];
-
-    // Register
-    if (process.argv[2] === '--register') {
-        await registerCommands(commands);
-        process.exit();
-    }
-
     await client.login(Config.client.token);
-}
-
-async function registerCommands(commands: ChatInputApplicationCommandData[]): Promise<void> {
-    console.log(`Registering commands: ${commands.map(command => `'${command.name}'`).join(', ')}`);
-
-    let rest = new REST({ version: '9' }).setToken(Config.client.token);
-    await rest.put(Routes.applicationCommands(Config.client.id), { body: [] });
-    await rest.put(Routes.applicationCommands(Config.client.id), { body: commands });
-
-    console.log('Commands registered.');
 }
 
 start().catch(error => {

@@ -2,21 +2,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "register",
-            "type": "node",
-            "request": "launch",
-            "protocol": "inspector",
-            "preLaunchTask": "build",
-            "cwd": "${workspaceFolder}",
-            "runtimeExecutable": "node",
-            "args": ["--enable-source-maps", "${workspaceFolder}/dist/test.js", "--register"],
-            "resolveSourceMapLocations": ["${workspaceFolder}/**", "!**/node_modules/**"],
-            "outputCapture": "std",
-            "internalConsoleOptions": "openOnSessionStart",
-            "skipFiles": ["<node_internals>/**"],
-            "restart": false
-        },
-        {
             "name": "test",
             "type": "node",
             "request": "launch",
