@@ -12,7 +12,7 @@ export declare type ButtonRetriever<T> = (intr: ButtonInteraction) => Promise<{
     intr: ButtonInteraction;
     value: T;
 }>;
-export declare type ExpireFunction = () => Promise<any>;
+export declare type ExpireFunction = () => Promise<void>;
 
 export declare interface CollectOptions {
     time: number;
