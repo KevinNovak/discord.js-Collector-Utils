@@ -18,6 +18,8 @@
         "lint:fix": "tslint --fix --project .",
         "format": "prettier --check .",
         "format:fix": "prettier --write .",
+        "clean": "git clean -xdf --exclude=\"/config/**/*\"",
+        "clean:dry": "git clean -xdf --exclude=\"/config/**/*\" --dry-run",
         "build": "tsc --project tsconfig.json",
         "prepare": "rm -rf dist && npm run build",
         "start": "npm run test",
