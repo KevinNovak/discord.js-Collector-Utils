@@ -188,6 +188,72 @@ async function start(): Promise<void> {
                 return;
             }
 
+            case 'modal': {
+                let prompt = await msg.channel.send({
+                    content: 'Please select your favorite fruit!',
+                    components: [
+                        {
+                            type: 'ACTION_ROW',
+                            components: [
+                                {
+                                    type: 'BUTTON',
+                                    customId: 'watermelon',
+                                    emoji: '🍉',
+                                    style: 'PRIMARY',
+                                },
+                                {
+                                    type: 'BUTTON',
+                                    customId: 'apple',
+                                    emoji: '🍎',
+                                    style: 'PRIMARY',
+                                },
+                                {
+                                    type: 'BUTTON',
+                                    customId: 'banana',
+                                    emoji: '🍌',
+                                    style: 'PRIMARY',
+                                },
+                            ],
+                        },
+                    ],
+                });
+
+                let result = await CollectorUtils.collectByModal(
+                    prompt,
+                    // Collect Filter
+                    (intr: ButtonInteraction) => intr.user.id === msg.author.id,
+                    // Stop Filter
+                    (nextMsg: Message) =>
+                        nextMsg.author.id === msg.author.id && nextMsg.content === 'stop',
+                    // Retrieve Result
+                    async (intr: ButtonInteraction) => {
+                        switch (intr.customId) {
+                            case 'watermelon':
+                                return { intr, value: 'Watermelon' };
+                            case 'apple':
+                                return { intr, value: 'Apple' };
+                            case 'banana':
+                                return { intr, value: 'Banana' };
+                            default:
+                                return;
+                        }
+                    },
+                    // Expire Function
+                    async () => {
+                        await msg.channel.send('Too slow! Try being more decisive next time.');
+                    },
+                    // Options
+                    { time: 10000, reset: true }
+                );
+
+                if (result === undefined) {
+                    return;
+                }
+
+                await result.intr.reply(`You selected **${result.value}**. Nice choice!`);
+                return;
+            }
+
             default: {
                 await msg.channel.send('Unknown test.');
             }

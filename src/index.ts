@@ -208,4 +208,77 @@ export class CollectorUtils {
             });
         });
     }
+
+    /**
+     * Collect a response by buttons.
+     * @param msg The message to collect button interactions on.
+     * @param filter Filter which takes an incoming interaction and returns a boolean as to whether the interaction should be collected or not.
+     * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
+     * @param retrieve Method which takes a collected interaction and returns a desired result, or `undefined` if invalid.
+     * @param expire Method which is run if the timer expires.
+     * @param options Options to use for collecting.
+     * @returns A desired result, or `undefined` if the collector expired.
+     */
+    public static async collectByModal<T>(
+        msg: Message,
+        filter: ButtonFilter,
+        stopFilter: MessageFilter,
+        retrieve: ButtonRetriever<T>,
+        expire: ExpireFunction,
+        options: CollectOptions = { time: 60000, reset: false }
+    ): Promise<
+        | {
+              intr: ButtonInteraction;
+              value: T;
+          }
+        | undefined
+    > {
+        return new Promise(async (resolve, reject) => {
+            let buttonCollector = msg.createMessageComponentCollector({
+                componentType: 'BUTTON',
+                filter,
+                time: options.time,
+            });
+
+            let msgCollector = msg.channel.createMessageCollector(
+                // Make sure message collector is ahead of reaction collector
+                { filter: (nextMsg: Message) => true, time: options.time + 1000 }
+            );
+
+            let expired = true;
+
+            buttonCollector.on('collect', async (intr: ButtonInteraction) => {
+                let result = await retrieve(intr);
+                if (result === undefined) {
+                    if (options.reset) {
+                        buttonCollector.resetTimer();
+                        msgCollector.resetTimer();
+                    }
+                    return;
+                } else {
+                    expired = false;
+                    buttonCollector.stop();
+                    resolve(result);
+                    return;
+                }
+            });
+
+            buttonCollector.on('end', async collected => {
+                msgCollector.stop();
+                if (expired) {
+                    await expire();
+                }
+            });
+
+            msgCollector.on('collect', async (nextMsg: Message) => {
+                let stop = stopFilter(nextMsg);
+                if (stop) {
+                    expired = false;
+                    buttonCollector.stop();
+                    resolve(undefined);
+                    return;
+                }
+            });
+        });
+    }
 }
