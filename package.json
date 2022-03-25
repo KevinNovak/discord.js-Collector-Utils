@@ -26,7 +26,7 @@
         "test": "npm run build && node --enable-source-maps dist/test.js"
     },
     "peerDependencies": {
-        "discord.js": ">=13.4.0"
+        "discord.js": "github:monbrey/discord.js#modals"
     },
     "devDependencies": {
         "@types/node": "17.0.23",
