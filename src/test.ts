@@ -1,4 +1,13 @@
-import { ButtonInteraction, Client, Intents, Message, MessageReaction, User } from 'discord.js';
+import {
+    ButtonInteraction,
+    Client,
+    Intents,
+    Message,
+    MessageReaction,
+    Modal,
+    ModalSubmitInteraction,
+    User,
+} from 'discord.js';
 import { CollectorUtils } from '.';
 
 let Config = require('../config/config.json');
@@ -190,6 +199,66 @@ async function start(): Promise<void> {
 
             default: {
                 await msg.channel.send('Unknown test.');
+            }
+        }
+    });
+
+    client.on('interactionCreate', async intr => {
+        const modal = new Modal({
+            customId: `modal-${intr.id}`,
+            title: 'Hello World',
+            components: [
+                {
+                    type: 'ACTION_ROW',
+                    components: [
+                        {
+                            type: 'TEXT_INPUT',
+                            customId: 'apple',
+                            required: true,
+                            label: 'Test Input',
+                            style: 'SHORT',
+                        },
+                    ],
+                },
+            ],
+        });
+
+        if (intr.isButton()) {
+            try {
+                let result = await CollectorUtils.collectByModal(
+                    intr,
+                    modal,
+                    // Collect Filter
+                    (modalIntr: ModalSubmitInteraction) =>
+                        modalIntr.customId === `modal-${intr.id}`,
+                    // Retrieve Result
+                    async (intr: ModalSubmitInteraction) => {
+                        let input = intr.components[0].components[0];
+
+                        if (input.value.length > 5) {
+                            await intr.reply('Too long. Try again!');
+                            return;
+                        }
+
+                        return { intr, value: input.value };
+                    },
+                    // Expire Function
+                    async () => {
+                        await intr.channel.send('Too slow! Try being more decisive next time.');
+                    },
+                    // Options
+                    { time: 60000, reset: true }
+                );
+
+                if (result === undefined) {
+                    return;
+                }
+
+                await result.intr.reply(`You selected **${result.value}**. Nice choice!`);
+                return;
+            } catch (error) {
+                console.log(error);
+                return;
             }
         }
     });

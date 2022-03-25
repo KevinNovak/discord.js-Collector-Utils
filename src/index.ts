@@ -1,8 +1,10 @@
 import {
+    BaseCommandInteraction,
     ButtonInteraction,
-    CommandInteraction,
     Message,
+    MessageComponentInteraction,
     MessageReaction,
+    Modal,
     ModalSubmitInteraction,
     TextBasedChannel,
     User,
@@ -232,7 +234,8 @@ export class CollectorUtils {
      * @returns A desired result, or `undefined` if the collector expired.
      */
     public static async collectByModal<T>(
-        intr: CommandInteraction,
+        intr: BaseCommandInteraction | MessageComponentInteraction,
+        modal: Modal,
         filter: ModalFilter,
         retrieve: ModalRetriever<T>,
         expire: ExpireFunction,
@@ -244,27 +247,44 @@ export class CollectorUtils {
           }
         | undefined
     > {
-        let modalIntr: ModalSubmitInteraction;
-        try {
-            modalIntr = await intr.awaitModalSubmit({
-                filter,
-                time: options.time + 1000,
-            });
-        } catch (error) {
-            // TODO: Check that this error was caused by an expiration
-            await expire();
-            return;
-        }
+        let attemptToCollect = async () => {
+            await intr.showModal(modal);
 
-        let result = await retrieve(modalIntr);
-        if (result === undefined) {
-            if (options.reset) {
-                // TODO: Send validation message somehow?
-                // Collect again
+            let modalIntr: ModalSubmitInteraction;
+            try {
+                modalIntr = await intr.awaitModalSubmit({
+                    filter,
+                    time: options.time,
+                });
+            } catch (error) {
+                // TODO: Check that this error was caused by an expiration
+                await expire();
+                return;
             }
-            return;
-        } else {
-            return result;
-        }
+
+            let result = await retrieve(modalIntr);
+            if (result === undefined) {
+                if (options.reset) {
+                    // TODO: Send validation message somehow?
+                    await intr.showModal(modal);
+                    // Collect again
+                }
+                return;
+            } else {
+                return result;
+            }
+        };
+
+        let result:
+            | {
+                  intr: ModalSubmitInteraction;
+                  value: T;
+              }
+            | undefined;
+        do {
+            result = await attemptToCollect();
+        } while (result === undefined && options.reset);
+
+        return result;
     }
 }
