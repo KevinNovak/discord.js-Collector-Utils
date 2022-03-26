@@ -1,8 +1,6 @@
 import {
-    BaseCommandInteraction,
     ButtonInteraction,
     Message,
-    MessageComponentInteraction,
     MessageReaction,
     Modal,
     ModalSubmitInteraction,
@@ -13,7 +11,6 @@ import {
 export declare type MessageFilter = (nextMsg: Message) => boolean;
 export declare type ReactionFilter = (msgReaction: MessageReaction, reactor: User) => boolean;
 export declare type ButtonFilter = (intr: ButtonInteraction) => boolean;
-export declare type ModalFilter = (intr: ModalSubmitInteraction) => boolean;
 export declare type MessageRetriever<T> = (nextMsg: Message) => Promise<T | undefined>;
 export declare type ReactionRetriever<T> = (
     msgReaction: MessageReaction,
@@ -225,7 +222,7 @@ export class CollectorUtils {
     }
 
     /**
-     * Collect a response by buttons.
+     * Collect a response by text input.
      * @param msg The message to collect button interactions on.
      * @param modal The modal to show when the button is clicked.
      * @param filter Filter which takes an incoming interaction and returns a boolean as to whether the interaction should be collected or not.
