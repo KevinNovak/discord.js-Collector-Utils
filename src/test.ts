@@ -258,7 +258,7 @@ async function start(): Promise<void> {
                                 let input = intr.components[0].components[0];
 
                                 if (input.value.toLowerCase().includes('fight club')) {
-                                    await intr.reply(`We don't talk about fight club.`);
+                                    await intr.reply(`We don't talk about fight club. Try again.`);
                                     return;
                                 }
 
