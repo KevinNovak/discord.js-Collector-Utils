@@ -197,68 +197,85 @@ async function start(): Promise<void> {
                 return;
             }
 
+            case 'modal': {
+                try {
+                    let prompt = await msg.channel.send({
+                        content: 'What is your favorite fruit?',
+                        components: [
+                            {
+                                type: 'ACTION_ROW',
+                                components: [
+                                    {
+                                        type: 'BUTTON',
+                                        customId: 'enter_response',
+                                        emoji: '⌨️',
+                                        label: 'Enter Response',
+                                        style: 'PRIMARY',
+                                    },
+                                ],
+                            },
+                        ],
+                    });
+
+                    let modal = new Modal({
+                        customId: 'modal', // Will be overwritten
+                        title: 'Hello World',
+                        components: [
+                            {
+                                type: 'ACTION_ROW',
+                                components: [
+                                    {
+                                        type: 'TEXT_INPUT',
+                                        customId: 'favorite_fruit',
+                                        label: 'Favorite Fruit',
+                                        required: true,
+                                        style: 'SHORT',
+                                    },
+                                ],
+                            },
+                        ],
+                    });
+
+                    let result = await CollectorUtils.collectByTextInput(
+                        prompt,
+                        modal,
+                        // Collect Filter
+                        (intr: ButtonInteraction) => intr.user.id === msg.author.id,
+                        // Stop Filter
+                        (nextMsg: Message) =>
+                            nextMsg.author.id === msg.author.id && nextMsg.content === 'stop',
+                        // Retrieve Result
+                        async (intr: ModalSubmitInteraction) => {
+                            let input = intr.components[0].components[0];
+
+                            if (input.value.length > 5) {
+                                await intr.reply('Too long. Try again!');
+                                return;
+                            }
+
+                            return { intr, value: input.value };
+                        },
+                        // Expire Function
+                        async () => {
+                            await msg.channel.send('Too slow! Try being more decisive next time.');
+                        },
+                        // Options
+                        { time: 10000, reset: true }
+                    );
+
+                    if (result === undefined) {
+                        return;
+                    }
+
+                    await result.intr.reply(`You selected **${result.value}**. Nice choice!`);
+                    return;
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+
             default: {
                 await msg.channel.send('Unknown test.');
-            }
-        }
-    });
-
-    client.on('interactionCreate', async intr => {
-        const modal = new Modal({
-            customId: `modal-${intr.id}`,
-            title: 'Hello World',
-            components: [
-                {
-                    type: 'ACTION_ROW',
-                    components: [
-                        {
-                            type: 'TEXT_INPUT',
-                            customId: 'apple',
-                            required: true,
-                            label: 'Test Input',
-                            style: 'SHORT',
-                        },
-                    ],
-                },
-            ],
-        });
-
-        if (intr.isButton()) {
-            try {
-                let result = await CollectorUtils.collectByModal(
-                    intr,
-                    modal,
-                    // Collect Filter
-                    (modalIntr: ModalSubmitInteraction) =>
-                        modalIntr.customId === `modal-${intr.id}`,
-                    // Retrieve Result
-                    async (intr: ModalSubmitInteraction) => {
-                        let input = intr.components[0].components[0];
-
-                        if (input.value.length > 5) {
-                            await intr.reply('Too long. Try again!');
-                            return;
-                        }
-
-                        return { intr, value: input.value };
-                    },
-                    // Expire Function
-                    async () => {
-                        await intr.channel.send('Too slow! Try being more decisive next time.');
-                    },
-                    // Options
-                    { time: 60000, reset: true }
-                );
-
-                if (result === undefined) {
-                    return;
-                }
-
-                await result.intr.reply(`You selected **${result.value}**. Nice choice!`);
-                return;
-            } catch (error) {
-                console.log(error);
-                return;
             }
         }
     });

@@ -224,19 +224,11 @@ export class CollectorUtils {
         });
     }
 
-    /**
-     * Collect a response by buttons.
-     * @param intr The message to collect button interactions on.
-     * @param filter Filter which takes an incoming interaction and returns a boolean as to whether the interaction should be collected or not.
-     * @param retrieve Method which takes a collected interaction and returns a desired result, or `undefined` if invalid.
-     * @param expire Method which is run if the timer expires.
-     * @param options Options to use for collecting.
-     * @returns A desired result, or `undefined` if the collector expired.
-     */
-    public static async collectByModal<T>(
-        intr: BaseCommandInteraction | MessageComponentInteraction,
+    public static async collectByTextInput<T>(
+        msg: Message,
         modal: Modal,
-        filter: ModalFilter,
+        filter: ButtonFilter,
+        stopFilter: MessageFilter,
         retrieve: ModalRetriever<T>,
         expire: ExpireFunction,
         options: CollectOptions = { time: 60000, reset: false }
@@ -247,44 +239,67 @@ export class CollectorUtils {
           }
         | undefined
     > {
-        let attemptToCollect = async () => {
-            await intr.showModal(modal);
+        return new Promise(async (resolve, reject) => {
+            let buttonCollector = msg.createMessageComponentCollector({
+                componentType: 'BUTTON',
+                filter,
+                time: options.time,
+            });
 
-            let modalIntr: ModalSubmitInteraction;
-            try {
-                modalIntr = await intr.awaitModalSubmit({
-                    filter,
-                    time: options.time,
-                });
-            } catch (error) {
-                // TODO: Check that this error was caused by an expiration
-                await expire();
-                return;
-            }
+            let msgCollector = msg.channel.createMessageCollector(
+                // Make sure message collector is ahead of reaction collector
+                { filter: (nextMsg: Message) => true, time: options.time + 1000 }
+            );
 
-            let result = await retrieve(modalIntr);
-            if (result === undefined) {
-                if (options.reset) {
-                    // TODO: Send validation message somehow?
-                    await intr.showModal(modal);
-                    // Collect again
+            let expired = true;
+
+            buttonCollector.on('collect', async (intr: ButtonInteraction) => {
+                modal.customId = `modal-${intr.id}`;
+                await intr.showModal(modal);
+
+                let modalIntr: ModalSubmitInteraction;
+                try {
+                    modalIntr = await intr.awaitModalSubmit({
+                        filter: (modalIntr: ModalSubmitInteraction) =>
+                            modalIntr.customId === `modal-${intr.id}`,
+                        time: options.time,
+                    });
+                } catch (error) {
+                    // Timed out
+                    return;
                 }
-                return;
-            } else {
-                return result;
-            }
-        };
 
-        let result:
-            | {
-                  intr: ModalSubmitInteraction;
-                  value: T;
-              }
-            | undefined;
-        do {
-            result = await attemptToCollect();
-        } while (result === undefined && options.reset);
+                let result = await retrieve(modalIntr);
+                if (result === undefined) {
+                    if (options.reset) {
+                        buttonCollector.resetTimer();
+                        msgCollector.resetTimer();
+                    }
+                    return;
+                } else {
+                    expired = false;
+                    buttonCollector.stop();
+                    resolve(result);
+                    return;
+                }
+            });
 
-        return result;
+            buttonCollector.on('end', async collected => {
+                msgCollector.stop();
+                if (expired) {
+                    await expire();
+                }
+            });
+
+            msgCollector.on('collect', async (nextMsg: Message) => {
+                let stop = stopFilter(nextMsg);
+                if (stop) {
+                    expired = false;
+                    buttonCollector.stop();
+                    resolve(undefined);
+                    return;
+                }
+            });
+        });
     }
 }
