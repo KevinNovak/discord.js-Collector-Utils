@@ -224,6 +224,17 @@ export class CollectorUtils {
         });
     }
 
+    /**
+     * Collect a response by buttons.
+     * @param msg The message to collect button interactions on.
+     * @param modal The modal to show when the button is clicked.
+     * @param filter Filter which takes an incoming interaction and returns a boolean as to whether the interaction should be collected or not.
+     * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
+     * @param retrieve Method which takes a collected interaction and returns a desired result, or `undefined` if invalid.
+     * @param expire Method which is run if the timer expires.
+     * @param options Options to use for collecting.
+     * @returns A desired result, or `undefined` if the collector expired.
+     */
     public static async collectByTextInput<T>(
         msg: Message,
         modal: Modal,
