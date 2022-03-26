@@ -1,4 +1,12 @@
-import { ButtonInteraction, Message, MessageReaction, TextBasedChannel, User } from 'discord.js';
+import {
+    ButtonInteraction,
+    Message,
+    MessageReaction,
+    Modal,
+    ModalSubmitInteraction,
+    TextBasedChannel,
+    User,
+} from 'discord.js';
 
 export declare type MessageFilter = (nextMsg: Message) => boolean;
 export declare type ReactionFilter = (msgReaction: MessageReaction, reactor: User) => boolean;
@@ -10,6 +18,10 @@ export declare type ReactionRetriever<T> = (
 ) => Promise<T | undefined>;
 export declare type ButtonRetriever<T> = (intr: ButtonInteraction) => Promise<{
     intr: ButtonInteraction;
+    value: T;
+}>;
+export declare type ModalRetriever<T> = (intr: ModalSubmitInteraction) => Promise<{
+    intr: ModalSubmitInteraction;
     value: T;
 }>;
 export declare type ExpireFunction = () => Promise<void>;
@@ -176,6 +188,96 @@ export class CollectorUtils {
 
             buttonCollector.on('collect', async (intr: ButtonInteraction) => {
                 let result = await retrieve(intr);
+                if (result === undefined) {
+                    if (options.reset) {
+                        buttonCollector.resetTimer();
+                        msgCollector.resetTimer();
+                    }
+                    return;
+                } else {
+                    expired = false;
+                    buttonCollector.stop();
+                    resolve(result);
+                    return;
+                }
+            });
+
+            buttonCollector.on('end', async collected => {
+                msgCollector.stop();
+                if (expired) {
+                    await expire();
+                }
+            });
+
+            msgCollector.on('collect', async (nextMsg: Message) => {
+                let stop = stopFilter(nextMsg);
+                if (stop) {
+                    expired = false;
+                    buttonCollector.stop();
+                    resolve(undefined);
+                    return;
+                }
+            });
+        });
+    }
+
+    /**
+     * Collect a response by text input.
+     * @param msg The message to collect button interactions on.
+     * @param modal The modal to show when the button is clicked.
+     * @param filter Filter which takes an incoming interaction and returns a boolean as to whether the interaction should be collected or not.
+     * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
+     * @param retrieve Method which takes a collected interaction and returns a desired result, or `undefined` if invalid.
+     * @param expire Method which is run if the timer expires.
+     * @param options Options to use for collecting.
+     * @returns A desired result, or `undefined` if the collector expired.
+     */
+    public static async collectByTextInput<T>(
+        msg: Message,
+        modal: Modal,
+        filter: ButtonFilter,
+        stopFilter: MessageFilter,
+        retrieve: ModalRetriever<T>,
+        expire: ExpireFunction,
+        options: CollectOptions = { time: 60000, reset: false }
+    ): Promise<
+        | {
+              intr: ModalSubmitInteraction;
+              value: T;
+          }
+        | undefined
+    > {
+        return new Promise(async (resolve, reject) => {
+            let buttonCollector = msg.createMessageComponentCollector({
+                componentType: 'BUTTON',
+                filter,
+                time: options.time,
+            });
+
+            let msgCollector = msg.channel.createMessageCollector(
+                // Make sure message collector is ahead of reaction collector
+                { filter: (nextMsg: Message) => true, time: options.time + 1000 }
+            );
+
+            let expired = true;
+
+            buttonCollector.on('collect', async (intr: ButtonInteraction) => {
+                modal.customId = `modal-${intr.id}`;
+                await intr.showModal(modal);
+
+                let modalIntr: ModalSubmitInteraction;
+                try {
+                    modalIntr = await intr.awaitModalSubmit({
+                        filter: (modalIntr: ModalSubmitInteraction) =>
+                            modalIntr.customId === `modal-${intr.id}`,
+                        time: options.time,
+                    });
+                } catch (error) {
+                    // Timed out
+                    return;
+                }
+
+                let result = await retrieve(modalIntr);
                 if (result === undefined) {
                     if (options.reset) {
                         buttonCollector.resetTimer();

@@ -1,4 +1,13 @@
-import { ButtonInteraction, Client, Intents, Message, MessageReaction, User } from 'discord.js';
+import {
+    ButtonInteraction,
+    Client,
+    Intents,
+    Message,
+    MessageReaction,
+    Modal,
+    ModalSubmitInteraction,
+    User,
+} from 'discord.js';
 import { CollectorUtils } from '.';
 
 let Config = require('../config/config.json');
@@ -194,6 +203,79 @@ async function start(): Promise<void> {
                     }
 
                     await result.intr.reply(`You selected **${result.value}**. Nice choice!`);
+                    return;
+                }
+
+                case 'modal': {
+                    let prompt = await msg.channel.send({
+                        content: 'What is your favorite movie?',
+                        components: [
+                            {
+                                type: 'ACTION_ROW',
+                                components: [
+                                    {
+                                        type: 'BUTTON',
+                                        customId: 'enter_response',
+                                        emoji: '⌨️',
+                                        label: 'Enter Response',
+                                        style: 'PRIMARY',
+                                    },
+                                ],
+                            },
+                        ],
+                    });
+
+                    let modal = new Modal({
+                        customId: 'modal', // Will be overwritten
+                        title: msg.client.user.username,
+                        components: [
+                            {
+                                type: 'ACTION_ROW',
+                                components: [
+                                    {
+                                        type: 'TEXT_INPUT',
+                                        customId: 'favorite_movie',
+                                        label: 'Favorite Movie',
+                                        required: true,
+                                        style: 'SHORT',
+                                    },
+                                ],
+                            },
+                        ],
+                    });
+
+                    let result = await CollectorUtils.collectByTextInput(
+                        prompt,
+                        modal,
+                        // Collect Filter
+                        (intr: ButtonInteraction) => intr.user.id === msg.author.id,
+                        // Stop Filter
+                        (nextMsg: Message) =>
+                            nextMsg.author.id === msg.author.id && nextMsg.content === 'stop',
+                        // Retrieve Result
+                        async (intr: ModalSubmitInteraction) => {
+                            let input = intr.components[0].components[0];
+
+                            if (input.value.toLowerCase().includes('fight club')) {
+                                await intr.reply(`We don't talk about fight club. Try again.`);
+                                return;
+                            }
+
+                            return { intr, value: input.value };
+                        },
+                        // Expire Function
+                        async () => {
+                            await msg.channel.send('Too slow! Try being more decisive next time.');
+                        },
+                        // Options
+                        { time: 10000, reset: true }
+                    );
+
+                    if (result === undefined) {
+                        return;
+                    }
+
+                    await result.intr.reply(`Oh, **${result.value}**? That one's hilarious!`);
                     return;
                 }
 
