@@ -219,7 +219,7 @@ async function start(): Promise<void> {
 
                     let modal = new Modal({
                         customId: 'modal', // Will be overwritten
-                        title: 'Hello World',
+                        title: 'Example Bot',
                         components: [
                             {
                                 type: 'ACTION_ROW',
