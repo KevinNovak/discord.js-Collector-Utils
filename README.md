@@ -212,7 +212,7 @@ let prompt = await msg.channel.send({
 
 let modal = new Modal({
     customId: 'modal', // Will be overwritten
-    title: 'Example Bot',
+    title: msg.client.user.username,
     components: [
         {
             type: 'ACTION_ROW',

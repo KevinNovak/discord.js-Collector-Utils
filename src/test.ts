@@ -227,7 +227,7 @@ async function start(): Promise<void> {
 
                     let modal = new Modal({
                         customId: 'modal', // Will be overwritten
-                        title: 'Example Bot',
+                        title: msg.client.user.username,
                         components: [
                             {
                                 type: 'ACTION_ROW',
