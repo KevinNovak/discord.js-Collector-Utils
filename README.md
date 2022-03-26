@@ -180,6 +180,8 @@ await result.intr.reply(`You selected **${result.value}**. Nice choice!`);
 
 ## `collectByTextInput` Example
 
+![](https://i.imgur.com/OO9U7Kq.png)
+
 ```typescript
 let prompt = await msg.channel.send({
     content: 'What is your favorite movie?',
