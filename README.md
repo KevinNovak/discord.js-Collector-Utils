@@ -13,6 +13,7 @@
 -   [`collectByMessage` Example](#collectbymessage-example)
 -   [`collectByReaction` Example](#collectbyreaction-example)
 -   [`collectByButton` Example](#collectbybutton-example)
+-   [`collectByTextInput` Example](#collectbytextinput-example)
 
 ## Installation
 
