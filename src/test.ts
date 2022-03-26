@@ -209,7 +209,7 @@ async function start(): Promise<void> {
                 case 'modal': {
                     try {
                         let prompt = await msg.channel.send({
-                            content: 'What is your favorite fruit?',
+                            content: 'What is your favorite movie?',
                             components: [
                                 {
                                     type: 'ACTION_ROW',
@@ -235,8 +235,8 @@ async function start(): Promise<void> {
                                     components: [
                                         {
                                             type: 'TEXT_INPUT',
-                                            customId: 'favorite_fruit',
-                                            label: 'Favorite Fruit',
+                                            customId: 'favorite_movie',
+                                            label: 'Favorite Movie',
                                             required: true,
                                             style: 'SHORT',
                                         },
@@ -257,8 +257,8 @@ async function start(): Promise<void> {
                             async (intr: ModalSubmitInteraction) => {
                                 let input = intr.components[0].components[0];
 
-                                if (input.value.length > 5) {
-                                    await intr.reply('Too long. Try again!');
+                                if (input.value.toLowerCase().includes('fight club')) {
+                                    await intr.reply(`We don't talk about fight club.`);
                                     return;
                                 }
 
@@ -278,7 +278,7 @@ async function start(): Promise<void> {
                             return;
                         }
 
-                        await result.intr.reply(`You selected **${result.value}**. Nice choice!`);
+                        await result.intr.reply(`Oh, **${result.value}**? That one's hilarious!`);
                         return;
                     } catch (error) {
                         console.log(error);
