@@ -6,6 +6,14 @@
 
 **Npm package** - Collector utilities for [discord.js](https://github.com/discordjs/discord.js/).
 
+## Table of Contents
+
+-   [Installation](#installation)
+-   [Importing](#importing)
+-   [`collectByMessage` Example](#collectbymessage-example)
+-   [`collectByReaction` Example](#collectbyreaction-example)
+-   [`collectByButton` Example](#collectbybutton-example)
+
 ## Installation
 
 `npm install discord.js-collector-utils`
