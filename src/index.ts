@@ -262,7 +262,7 @@ export class CollectorUtils {
             let expired = true;
 
             buttonCollector.on('collect', async (intr: ButtonInteraction) => {
-                modal.customId = `text-modal-${intr.id}`;
+                modal.customId = `modal-${intr.id}`;
                 await intr.showModal(modal);
 
                 let modalIntr: ModalSubmitInteraction;
