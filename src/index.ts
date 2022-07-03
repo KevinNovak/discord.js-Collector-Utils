@@ -222,7 +222,7 @@ export class CollectorUtils {
     }
 
     /**
-     * Collect a response by text input.
+     * Collect a response through a modal.
      * @param msg The message to collect button interactions on.
      * @param modal The modal to show when the button is clicked.
      * @param filter Filter which takes an incoming interaction and returns a boolean as to whether the interaction should be collected or not.
@@ -232,7 +232,7 @@ export class CollectorUtils {
      * @param options Options to use for collecting.
      * @returns A desired result, or `undefined` if the collector expired.
      */
-    public static async collectByTextInput<T>(
+    public static async collectByModal<T>(
         msg: Message,
         modal: Modal,
         filter: ButtonFilter,

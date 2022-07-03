@@ -244,7 +244,7 @@ async function start(): Promise<void> {
                         ],
                     });
 
-                    let result = await CollectorUtils.collectByTextInput(
+                    let result = await CollectorUtils.collectByModal(
                         prompt,
                         modal,
                         // Collect Filter
