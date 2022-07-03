@@ -13,7 +13,7 @@
 -   [`collectByMessage` Example](#collectbymessage-example)
 -   [`collectByReaction` Example](#collectbyreaction-example)
 -   [`collectByButton` Example](#collectbybutton-example)
--   [`collectByTextInput` Example](#collectbytextinput-example)
+-   [`collectByModal` Example](#collectByModal-example)
 
 ## Installation
 
@@ -187,7 +187,7 @@ if (result === undefined) {
 await result.intr.reply(`You selected **${result.value}**. Nice choice!`);
 ```
 
-## `collectByTextInput` Example
+## `collectByModal` Example
 
 ![](https://i.imgur.com/OO9U7Kq.png)
 
@@ -229,7 +229,7 @@ let modal = new Modal({
     ],
 });
 
-let result = await CollectorUtils.collectByTextInput(
+let result = await CollectorUtils.collectByModal(
     prompt,
     modal,
     // Collect Filter
