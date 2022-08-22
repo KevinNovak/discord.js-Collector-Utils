@@ -186,28 +186,26 @@ async function start(): Promise<void> {
                         ],
                     });
 
-                    let modal = new Modal({
-                        customId: 'modal', // Will be overwritten
-                        title: msg.client.user.username,
-                        components: [
-                            {
-                                type: 'ACTION_ROW',
-                                components: [
-                                    {
-                                        type: 'TEXT_INPUT',
-                                        customId: 'favorite_movie',
-                                        label: 'Favorite Movie',
-                                        required: true,
-                                        style: 'SHORT',
-                                    },
-                                ],
-                            },
-                        ],
-                    });
-
                     let result = await CollectorUtils.collectByModal(
                         prompt,
-                        modal,
+                        new Modal({
+                            customId: 'modal', // Will be overwritten
+                            title: msg.client.user.username,
+                            components: [
+                                {
+                                    type: 'ACTION_ROW',
+                                    components: [
+                                        {
+                                            type: 'TEXT_INPUT',
+                                            customId: 'favorite_movie',
+                                            label: 'Favorite Movie',
+                                            required: true,
+                                            style: 'SHORT',
+                                        },
+                                    ],
+                                },
+                            ],
+                        }),
                         // Collect Filter
                         (intr: ButtonInteraction) => intr.user.id === msg.author.id,
                         // Stop Filter
