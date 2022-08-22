@@ -6,6 +6,7 @@ import {
     MessageReaction,
     Modal,
     ModalSubmitInteraction,
+    SelectMenuInteraction,
     User,
 } from 'discord.js';
 import { CollectorUtils } from '.';
@@ -189,6 +190,66 @@ async function start(): Promise<void> {
                                 default:
                                     return;
                             }
+                        },
+                        // Expire Function
+                        async () => {
+                            await msg.channel.send('Too slow! Try being more decisive next time.');
+                        },
+                        // Options
+                        { time: 10000, reset: true }
+                    );
+
+                    if (result === undefined) {
+                        return;
+                    }
+
+                    await result.intr.reply(`You selected **${result.value}**. Nice choice!`);
+                    return;
+                }
+
+                case 'select-menu': {
+                    let prompt = await msg.channel.send({
+                        content: 'Please select your favorite fruit!',
+                        components: [
+                            {
+                                type: 'ACTION_ROW',
+                                components: [
+                                    {
+                                        type: 'SELECT_MENU',
+                                        customId: 'select_menu',
+                                        options: [
+                                            {
+                                                emoji: '🍉',
+                                                label: 'Watermelon',
+                                                value: 'Watermelon',
+                                            },
+                                            {
+                                                emoji: '🍎',
+                                                label: 'Apple',
+                                                value: 'Apple',
+                                            },
+                                            {
+                                                emoji: '🍌',
+                                                label: 'Banana',
+                                                value: 'Banana',
+                                            },
+                                        ],
+                                    },
+                                ],
+                            },
+                        ],
+                    });
+
+                    let result = await CollectorUtils.collectBySelectMenu(
+                        prompt,
+                        // Collect Filter
+                        (intr: SelectMenuInteraction) => intr.user.id === msg.author.id,
+                        // Stop Filter
+                        (nextMsg: Message) =>
+                            nextMsg.author.id === msg.author.id && nextMsg.content === 'stop',
+                        // Retrieve Result
+                        async (intr: SelectMenuInteraction) => {
+                            return { intr, value: intr.values[0] };
                         },
                         // Expire Function
                         async () => {

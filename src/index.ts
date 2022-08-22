@@ -4,6 +4,7 @@ import {
     MessageReaction,
     Modal,
     ModalSubmitInteraction,
+    SelectMenuInteraction,
     TextBasedChannel,
     User,
 } from 'discord.js';
@@ -11,6 +12,7 @@ import {
 export declare type MessageFilter = (nextMsg: Message) => boolean;
 export declare type ReactionFilter = (msgReaction: MessageReaction, reactor: User) => boolean;
 export declare type ButtonFilter = (intr: ButtonInteraction) => boolean;
+export declare type SelectMenuFilter = (intr: SelectMenuInteraction) => boolean;
 export declare type MessageRetriever<T> = (nextMsg: Message) => Promise<T | undefined>;
 export declare type ReactionRetriever<T> = (
     msgReaction: MessageReaction,
@@ -18,6 +20,10 @@ export declare type ReactionRetriever<T> = (
 ) => Promise<T | undefined>;
 export declare type ButtonRetriever<T> = (intr: ButtonInteraction) => Promise<{
     intr: ButtonInteraction;
+    value: T;
+}>;
+export declare type SelectMenuRetriever<T> = (intr: SelectMenuInteraction) => Promise<{
+    intr: SelectMenuInteraction;
     value: T;
 }>;
 export declare type ModalRetriever<T> = (intr: ModalSubmitInteraction) => Promise<{
@@ -214,6 +220,79 @@ export class CollectorUtils {
                 if (stop) {
                     expired = false;
                     buttonCollector.stop();
+                    resolve(undefined);
+                    return;
+                }
+            });
+        });
+    }
+
+    /**
+     * Collect a response by select menu.
+     * @param msg The message to collect select menu interactions on.
+     * @param filter Filter which takes an incoming interaction and returns a boolean as to whether the interaction should be collected or not.
+     * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
+     * @param retrieve Method which takes a collected interaction and returns a desired result, or `undefined` if invalid.
+     * @param expire Method which is run if the timer expires.
+     * @param options Options to use for collecting.
+     * @returns A desired result, or `undefined` if the collector expired.
+     */
+    public static async collectBySelectMenu<T>(
+        msg: Message,
+        filter: SelectMenuFilter,
+        stopFilter: MessageFilter,
+        retrieve: SelectMenuRetriever<T>,
+        expire: ExpireFunction,
+        options: CollectOptions = { time: 60000, reset: false }
+    ): Promise<
+        | {
+              intr: SelectMenuInteraction;
+              value: T;
+          }
+        | undefined
+    > {
+        return new Promise(async (resolve, reject) => {
+            let selectMenuCollector = msg.createMessageComponentCollector({
+                componentType: 'SELECT_MENU',
+                filter,
+                time: options.time,
+            });
+
+            let msgCollector = msg.channel.createMessageCollector(
+                // Make sure message collector is ahead of reaction collector
+                { filter: (nextMsg: Message) => true, time: options.time + 1000 }
+            );
+
+            let expired = true;
+
+            selectMenuCollector.on('collect', async (intr: SelectMenuInteraction) => {
+                let result = await retrieve(intr);
+                if (result === undefined) {
+                    if (options.reset) {
+                        selectMenuCollector.resetTimer();
+                        msgCollector.resetTimer();
+                    }
+                    return;
+                } else {
+                    expired = false;
+                    selectMenuCollector.stop();
+                    resolve(result);
+                    return;
+                }
+            });
+
+            selectMenuCollector.on('end', async collected => {
+                msgCollector.stop();
+                if (expired) {
+                    await expire();
+                }
+            });
+
+            msgCollector.on('collect', async (nextMsg: Message) => {
+                let stop = stopFilter(nextMsg);
+                if (stop) {
+                    expired = false;
+                    selectMenuCollector.stop();
                     resolve(undefined);
                     return;
                 }
