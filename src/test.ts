@@ -28,12 +28,12 @@ async function start(): Promise<void> {
     client.on('messageCreate', async (msg: Message) => {
         try {
             let args = msg.content.split(' ');
-            let command = args[0].toLowerCase();
+            let command = args[0]?.toLowerCase();
             if (command !== 'test') {
                 return;
             }
 
-            let subCommand = args[1].toLowerCase();
+            let subCommand = args[1]?.toLowerCase();
             if (!subCommand) {
                 await msg.channel.send('Please supply a test to run.');
                 return;
