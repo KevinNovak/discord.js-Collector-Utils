@@ -41,9 +41,9 @@ export class CollectorUtils {
     /**
      * Collect a response by buttons.
      * @param msg The message to collect button interactions on.
-     * @param filter Filter which takes an incoming interaction and returns a boolean as to whether the interaction should be collected or not.
+     * @param filter Filter which takes an incoming button interaction and returns a boolean as to whether the interaction should be collected or not.
      * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
-     * @param retrieve Method which takes a collected interaction and returns a desired result, or `undefined` if invalid.
+     * @param retrieve Method which takes a collected button interaction and returns a desired result, or `undefined` if invalid.
      * @param expire Method which is run if the timer expires.
      * @param options Options to use for collecting.
      * @returns A desired result, or `undefined` if the collector expired.
@@ -114,9 +114,9 @@ export class CollectorUtils {
     /**
      * Collect a response by select menu.
      * @param msg The message to collect select menu interactions on.
-     * @param filter Filter which takes an incoming interaction and returns a boolean as to whether the interaction should be collected or not.
+     * @param filter Filter which takes an incoming select menu interaction and returns a boolean as to whether the interaction should be collected or not.
      * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
-     * @param retrieve Method which takes a collected interaction and returns a desired result, or `undefined` if invalid.
+     * @param retrieve Method which takes a collected select menu interaction and returns a desired result, or `undefined` if invalid.
      * @param expire Method which is run if the timer expires.
      * @param options Options to use for collecting.
      * @returns A desired result, or `undefined` if the collector expired.
@@ -188,9 +188,9 @@ export class CollectorUtils {
      * Collect a response through a modal.
      * @param msg The message to collect button interactions on.
      * @param modal The modal to show when the button is clicked.
-     * @param filter Filter which takes an incoming interaction and returns a boolean as to whether the interaction should be collected or not.
+     * @param filter Filter which takes an incoming button interaction and returns a boolean as to whether the interaction should be collected or not.
      * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
-     * @param retrieve Method which takes a collected interaction and returns a desired result, or `undefined` if invalid.
+     * @param retrieve Method which takes a collected modal interaction and returns a desired result, or `undefined` if invalid.
      * @param expire Method which is run if the timer expires.
      * @param options Options to use for collecting.
      * @returns A desired result, or `undefined` if the collector expired.
