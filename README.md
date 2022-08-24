@@ -32,8 +32,8 @@ import { CollectorUtils } from 'discord.js-collector-utils';
 
 ![](https://i.imgur.com/tILSNFD.png)
 
-```typescript
-let prompt = await msg.channel.send({
+```javascript
+let prompt = await channel.send({
     content: 'Please select your favorite fruit!',
     components: [
         {
@@ -65,26 +65,25 @@ let prompt = await msg.channel.send({
 let result = await CollectorUtils.collectByButton(
     prompt,
     // Collect Filter
-    (intr: ButtonInteraction) => intr.user.id === msg.author.id,
+    buttonInteraction => buttonInteraction.user.id === user.id,
     // Stop Filter
-    (nextMsg: Message) =>
-        nextMsg.author.id === msg.author.id && nextMsg.content.toLowerCase() === 'stop',
+    message => message.author.id === user.id && message.content.toLowerCase() === 'stop',
     // Retrieve Result
-    async (intr: ButtonInteraction) => {
-        switch (intr.customId) {
+    async buttonInteraction => {
+        switch (buttonInteraction.customId) {
             case 'watermelon':
-                return { intr, value: 'Watermelon' };
+                return { intr: buttonInteraction, value: 'Watermelon' };
             case 'apple':
-                return { intr, value: 'Apple' };
+                return { intr: buttonInteraction, value: 'Apple' };
             case 'banana':
-                return { intr, value: 'Banana' };
+                return { intr: buttonInteraction, value: 'Banana' };
             default:
                 return;
         }
     },
     // Expire Function
     async () => {
-        await msg.channel.send('Too slow! Try being more decisive next time.');
+        await channel.send('Too slow! Try being more decisive next time.');
     },
     // Options
     { time: 10000, reset: true }
@@ -101,8 +100,8 @@ await result.intr.reply(`You selected **${result.value}**. Nice choice!`);
 
 ![](https://i.imgur.com/fS1UQzo.png)
 
-```typescript
-let prompt = await msg.channel.send({
+```javascript
+let prompt = await channel.send({
     content: 'Please select your favorite fruit!',
     components: [
         {
@@ -137,17 +136,19 @@ let prompt = await msg.channel.send({
 let result = await CollectorUtils.collectBySelectMenu(
     prompt,
     // Collect Filter
-    (intr: SelectMenuInteraction) => intr.user.id === msg.author.id,
+    selectMenuInteraction => selectMenuInteraction.user.id === user.id,
     // Stop Filter
-    (nextMsg: Message) =>
-        nextMsg.author.id === msg.author.id && nextMsg.content.toLowerCase() === 'stop',
+    message => message.author.id === user.id && message.content.toLowerCase() === 'stop',
     // Retrieve Result
-    async (intr: SelectMenuInteraction) => {
-        return { intr, value: intr.values[0] };
+    async selectMenuInteraction => {
+        return {
+            intr: selectMenuInteraction,
+            value: selectMenuInteraction.values[0],
+        };
     },
     // Expire Function
     async () => {
-        await msg.channel.send('Too slow! Try being more decisive next time.');
+        await channel.send('Too slow! Try being more decisive next time.');
     },
     // Options
     { time: 10000, reset: true }
@@ -164,8 +165,8 @@ await result.intr.reply(`You selected **${result.value}**. Nice choice!`);
 
 ![](https://i.imgur.com/OO9U7Kq.png)
 
-```typescript
-let prompt = await msg.channel.send({
+```javascript
+let prompt = await channel.send({
     content: 'What is your favorite movie?',
     components: [
         {
@@ -187,7 +188,7 @@ let result = await CollectorUtils.collectByModal(
     prompt,
     new Modal({
         customId: 'modal', // Will be overwritten
-        title: msg.client.user.username,
+        title: client.user.username,
         components: [
             {
                 type: 'ACTION_ROW',
@@ -204,24 +205,23 @@ let result = await CollectorUtils.collectByModal(
         ],
     }),
     // Collect Filter
-    (intr: ButtonInteraction) => intr.user.id === msg.author.id,
+    buttonInteraction => buttonInteraction.user.id === user.id,
     // Stop Filter
-    (nextMsg: Message) =>
-        nextMsg.author.id === msg.author.id && nextMsg.content.toLowerCase() === 'stop',
+    message => message.author.id === user.id && message.content.toLowerCase() === 'stop',
     // Retrieve Result
-    async (intr: ModalSubmitInteraction) => {
-        let input = intr.components[0].components[0];
+    async buttonInteraction => {
+        let textInput = buttonInteraction.components[0].components[0];
 
-        if (input.value.toLowerCase().includes('fight club')) {
-            await intr.reply(`We don't talk about fight club. Try again.`);
+        if (textInput.value.toLowerCase().includes('fight club')) {
+            await buttonInteraction.reply(`We don't talk about fight club. Try again.`);
             return;
         }
 
-        return { intr, value: input.value };
+        return { intr: buttonInteraction, value: textInput.value };
     },
     // Expire Function
     async () => {
-        await msg.channel.send('Too slow! Try being more decisive next time.');
+        await channel.send('Too slow! Try being more decisive next time.');
     },
     // Options
     { time: 10000, reset: true }
@@ -238,8 +238,8 @@ await result.intr.reply(`Oh, **${result.value}**? That one's hilarious!`);
 
 ![](https://i.imgur.com/Vo9kXeI.png)
 
-```typescript
-let prompt = await msg.channel.send('Please select your favorite fruit!');
+```javascript
+let prompt = await channel.send('Please select your favorite fruit!');
 
 prompt.react('🍉');
 prompt.react('🍎');
@@ -248,13 +248,12 @@ prompt.react('🍌');
 let favoriteFruit = await CollectorUtils.collectByReaction(
     prompt,
     // Collect Filter
-    (msgReaction: MessageReaction, reactor: User) => reactor.id === msg.author.id,
+    (messageReaction, reactor) => reactor.id === user.id,
     // Stop Filter
-    (nextMsg: Message) =>
-        nextMsg.author.id === msg.author.id && nextMsg.content.toLowerCase() === 'stop',
+    message => message.author.id === user.id && message.content.toLowerCase() === 'stop',
     // Retrieve Result
-    async (msgReaction: MessageReaction, reactor: User) => {
-        switch (msgReaction.emoji.name) {
+    async (messageReaction, user) => {
+        switch (messageReaction.emoji.name) {
             case '🍉':
                 return 'Watermelon';
             case '🍎':
@@ -267,7 +266,7 @@ let favoriteFruit = await CollectorUtils.collectByReaction(
     },
     // Expire Function
     async () => {
-        await msg.channel.send('Too slow! Try being more decisive next time.');
+        await channel.send('Too slow! Try being more decisive next time.');
     },
     // Options
     { time: 10000, reset: true }
@@ -277,38 +276,37 @@ if (favoriteFruit === undefined) {
     return;
 }
 
-await msg.channel.send(`You selected **${favoriteFruit}**. Nice choice!`);
+await channel.send(`You selected **${favoriteFruit}**. Nice choice!`);
 ```
 
 ## `collectByMessage` Example
 
 ![](https://i.imgur.com/AOFApbY.png)
 
-```typescript
-await msg.channel.send('What is your favorite color?');
+```javascript
+await channel.send('What is your favorite color?');
 
 let favoriteColor = await CollectorUtils.collectByMessage(
-    msg.channel,
+    channel,
     // Collect Filter
-    (nextMsg: Message) => nextMsg.author.id === msg.author.id,
+    message => message.author.id === user.id,
     // Stop Filter
-    (nextMsg: Message) =>
-        nextMsg.author.id === msg.author.id && nextMsg.content.toLowerCase() === 'stop',
+    message => message.author.id === user.id && message.content.toLowerCase() === 'stop',
     // Retrieve Result
-    async (nextMsg: Message) => {
+    async message => {
         let colorOptions = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
 
         let favoriteColor = colorOptions.find(
-            colorOption => colorOption === nextMsg.content.toLowerCase()
+            colorOption => colorOption === message.content.toLowerCase()
         );
 
         if (!favoriteColor) {
-            await nextMsg.channel.send(`Sorry, that color is not an option.`);
+            await channel.send(`Sorry, that color is not an option.`);
             return;
         }
 
         if (favoriteColor === 'yellow') {
-            await nextMsg.channel.send(`Ew, **yellow**?! Please choose a better color.`);
+            await channel.send(`Ew, **yellow**?! Please choose a better color.`);
             return;
         }
 
@@ -316,7 +314,7 @@ let favoriteColor = await CollectorUtils.collectByMessage(
     },
     // Expire Function
     async () => {
-        await msg.channel.send(`Too slow! Try being more decisive next time.`);
+        await channel.send(`Too slow! Try being more decisive next time.`);
     },
     // Options
     { time: 10000, reset: true }
@@ -326,5 +324,5 @@ if (favoriteColor === undefined) {
     return;
 }
 
-await msg.channel.send(`You selected **${favoriteColor}**. Nice choice!`);
+await channel.send(`You selected **${favoriteColor}**. Nice choice!`);
 ```
