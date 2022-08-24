@@ -42,7 +42,7 @@ export class CollectorUtils {
      * Collect a response by buttons.
      * @param msg The message to collect button interactions on.
      * @param filter Filter which takes an incoming button interaction and returns a boolean as to whether the interaction should be collected or not.
-     * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
+     * @param stopFilter Filter which takes an incoming button interaction and returns a boolean as to whether the collector should be silently stopped.
      * @param retrieve Method which takes a collected button interaction and returns a desired result, or `undefined` if invalid.
      * @param expire Method which is run if the timer expires.
      * @param options Options to use for collecting.
@@ -51,7 +51,7 @@ export class CollectorUtils {
     public static async collectByButton<T>(
         msg: Message,
         filter: ButtonFilter,
-        stopFilter: MessageFilter,
+        stopFilter: ButtonFilter,
         retrieve: ButtonRetriever<T>,
         expire: ExpireFunction,
         options: CollectOptions = { time: 60000, reset: false }
@@ -69,10 +69,10 @@ export class CollectorUtils {
                 time: options.time,
             });
 
-            let stopCollector = msg.channel.createMessageCollector(
-                // Make sure message collector is ahead of reaction collector
-                { filter: (nextMsg: Message) => true, time: options.time + 1000 }
-            );
+            let stopCollector = msg.createMessageComponentCollector({
+                componentType: 'BUTTON',
+                time: options.time + 1000,
+            });
 
             let expired = true;
 
@@ -99,8 +99,8 @@ export class CollectorUtils {
                 }
             });
 
-            stopCollector.on('collect', async (nextMsg: Message) => {
-                let stop = stopFilter(nextMsg);
+            stopCollector.on('collect', async (intr: ButtonInteraction) => {
+                let stop = stopFilter(intr);
                 if (stop) {
                     expired = false;
                     btnCollector.stop();

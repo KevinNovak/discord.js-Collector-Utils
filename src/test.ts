@@ -66,6 +66,12 @@ async function start(): Promise<void> {
                                         emoji: '🍌',
                                         style: 'PRIMARY',
                                     },
+                                    {
+                                        type: 'BUTTON',
+                                        customId: 'cancel',
+                                        label: 'Cancel',
+                                        style: 'SECONDARY',
+                                    },
                                 ],
                             },
                         ],
@@ -76,9 +82,8 @@ async function start(): Promise<void> {
                         // Collect Filter
                         (intr: ButtonInteraction) => intr.user.id === msg.author.id,
                         // Stop Filter
-                        (nextMsg: Message) =>
-                            nextMsg.author.id === msg.author.id &&
-                            nextMsg.content.toLowerCase() === 'stop',
+                        (intr: ButtonInteraction) =>
+                            intr.user.id === msg.author.id && intr.customId === 'cancel',
                         // Retrieve Result
                         async (intr: ButtonInteraction) => {
                             switch (intr.customId) {
