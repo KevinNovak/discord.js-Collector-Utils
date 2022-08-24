@@ -65,7 +65,8 @@ let result = await CollectorUtils.collectByButton(
     // Collect Filter
     (intr: ButtonInteraction) => intr.user.id === msg.author.id,
     // Stop Filter
-    (nextMsg: Message) => nextMsg.author.id === msg.author.id && nextMsg.content === 'stop',
+    (nextMsg: Message) =>
+        nextMsg.author.id === msg.author.id && nextMsg.content.toLowerCase() === 'stop',
     // Retrieve Result
     async (intr: ButtonInteraction) => {
         switch (intr.customId) {
@@ -136,7 +137,8 @@ let result = await CollectorUtils.collectBySelectMenu(
     // Collect Filter
     (intr: SelectMenuInteraction) => intr.user.id === msg.author.id,
     // Stop Filter
-    (nextMsg: Message) => nextMsg.author.id === msg.author.id && nextMsg.content === 'stop',
+    (nextMsg: Message) =>
+        nextMsg.author.id === msg.author.id && nextMsg.content.toLowerCase() === 'stop',
     // Retrieve Result
     async (intr: SelectMenuInteraction) => {
         return { intr, value: intr.values[0] };
@@ -202,7 +204,8 @@ let result = await CollectorUtils.collectByModal(
     // Collect Filter
     (intr: ButtonInteraction) => intr.user.id === msg.author.id,
     // Stop Filter
-    (nextMsg: Message) => nextMsg.author.id === msg.author.id && nextMsg.content === 'stop',
+    (nextMsg: Message) =>
+        nextMsg.author.id === msg.author.id && nextMsg.content.toLowerCase() === 'stop',
     // Retrieve Result
     async (intr: ModalSubmitInteraction) => {
         let input = intr.components[0].components[0];
@@ -245,7 +248,8 @@ let favoriteFruit = await CollectorUtils.collectByReaction(
     // Collect Filter
     (msgReaction: MessageReaction, reactor: User) => reactor.id === msg.author.id,
     // Stop Filter
-    (nextMsg: Message) => nextMsg.author.id === msg.author.id && nextMsg.content === 'stop',
+    (nextMsg: Message) =>
+        nextMsg.author.id === msg.author.id && nextMsg.content.toLowerCase() === 'stop',
     // Retrieve Result
     async (msgReaction: MessageReaction, reactor: User) => {
         switch (msgReaction.emoji.name) {
