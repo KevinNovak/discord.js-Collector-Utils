@@ -388,6 +388,7 @@ export class CollectorUtils {
             });
 
             msgCollector.on('end', async collected => {
+                stopCollector.stop();
                 if (expired) {
                     await expire();
                 }
