@@ -22,7 +22,9 @@
 
 ## Importing
 
-```typescript
+```javascript
+const { CollectorUtils } = require('discord.js-collector-utils');
+// OR
 import { CollectorUtils } from 'discord.js-collector-utils';
 ```
 
