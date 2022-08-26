@@ -37,7 +37,7 @@ export declare interface CollectOptions {
 export class CollectorUtils {
     /**
      * Collect a response by buttons.
-     * @param msg Message to collect button interactions on.
+     * @param message Message to collect button interactions on.
      * @param target Target user to collect from.
      * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
      * @param retrieve Method which takes a collected button interaction and returns a desired result, or `undefined` if invalid.
@@ -46,7 +46,7 @@ export class CollectorUtils {
      * @returns A desired result, or `undefined` if the collector expired.
      */
     public static async collectByButton<T>(
-        msg: Message,
+        message: Message,
         target: User,
         stopFilter: StopFilter,
         retrieve: ButtonRetriever<T>,
@@ -60,13 +60,13 @@ export class CollectorUtils {
         | undefined
     > {
         return new Promise(async (resolve, reject) => {
-            let btnCollector = msg.createMessageComponentCollector({
+            let btnCollector = message.createMessageComponentCollector({
                 componentType: 'BUTTON',
                 filter: intr => intr.user.id === target.id,
                 time: options.time,
             });
 
-            let stopCollector = msg.channel.createMessageCollector(
+            let stopCollector = message.channel.createMessageCollector(
                 // Make sure message collector is ahead of reaction collector
                 {
                     filter: message => message.author.id === target.id && stopFilter(message),
@@ -109,7 +109,7 @@ export class CollectorUtils {
 
     /**
      * Collect a response by select menu.
-     * @param msg Message to collect select menu interactions on.
+     * @param message Message to collect select menu interactions on.
      * @param target Target user to collect from.
      * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
      * @param retrieve Method which takes a collected select menu interaction and returns a desired result, or `undefined` if invalid.
@@ -118,7 +118,7 @@ export class CollectorUtils {
      * @returns A desired result, or `undefined` if the collector expired.
      */
     public static async collectBySelectMenu<T>(
-        msg: Message,
+        message: Message,
         target: User,
         stopFilter: StopFilter,
         retrieve: SelectMenuRetriever<T>,
@@ -132,13 +132,13 @@ export class CollectorUtils {
         | undefined
     > {
         return new Promise(async (resolve, reject) => {
-            let smCollector = msg.createMessageComponentCollector({
+            let smCollector = message.createMessageComponentCollector({
                 componentType: 'SELECT_MENU',
                 filter: intr => intr.user.id === target.id,
                 time: options.time,
             });
 
-            let stopCollector = msg.channel.createMessageCollector(
+            let stopCollector = message.channel.createMessageCollector(
                 // Make sure message collector is ahead of reaction collector
                 {
                     filter: message => message.author.id === target.id && stopFilter(message),
@@ -181,7 +181,7 @@ export class CollectorUtils {
 
     /**
      * Collect a response through a modal.
-     * @param msg Message to collect button interactions on.
+     * @param message Message to collect button interactions on.
      * @param modal The modal to show when the button is clicked.
      * @param target Target user to collect from.
      * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
@@ -191,7 +191,7 @@ export class CollectorUtils {
      * @returns A desired result, or `undefined` if the collector expired.
      */
     public static async collectByModal<T>(
-        msg: Message,
+        message: Message,
         modal: Modal,
         target: User,
         stopFilter: StopFilter,
@@ -206,13 +206,13 @@ export class CollectorUtils {
         | undefined
     > {
         return new Promise(async (resolve, reject) => {
-            let btnCollector = msg.createMessageComponentCollector({
+            let btnCollector = message.createMessageComponentCollector({
                 componentType: 'BUTTON',
                 filter: intr => intr.user.id === target.id,
                 time: options.time,
             });
 
-            let stopCollector = msg.channel.createMessageCollector(
+            let stopCollector = message.channel.createMessageCollector(
                 // Make sure message collector is ahead of reaction collector
                 {
                     filter: message => message.author.id === target.id && stopFilter(message),
@@ -270,7 +270,7 @@ export class CollectorUtils {
 
     /**
      * Collect a response by reactions.
-     * @param msg Message to collect reactions on.
+     * @param message Message to collect reactions on.
      * @param target Target user to collect from.
      * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
      * @param retrieve Method which takes a collected reaction and returns a desired result, or `undefined` if invalid.
@@ -279,7 +279,7 @@ export class CollectorUtils {
      * @returns A desired result, or `undefined` if the collector expired.
      */
     public static async collectByReaction<T>(
-        msg: Message,
+        message: Message,
         target: User,
         stopFilter: StopFilter,
         retrieve: ReactionRetriever<T>,
@@ -287,12 +287,12 @@ export class CollectorUtils {
         options: CollectOptions = { time: 60000, reset: false }
     ): Promise<T> {
         return new Promise(async (resolve, reject) => {
-            let reactCollector = msg.createReactionCollector({
+            let reactCollector = message.createReactionCollector({
                 filter: (msgReaction, reactor) => reactor.id === target.id,
                 time: options.time,
             });
 
-            let stopCollector = msg.channel.createMessageCollector(
+            let stopCollector = message.channel.createMessageCollector(
                 // Make sure message collector is ahead of reaction collector
                 {
                     filter: message => message.author.id === target.id && stopFilter(message),
