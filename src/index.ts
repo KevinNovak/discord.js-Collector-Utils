@@ -39,18 +39,18 @@ export class CollectorUtils {
      * Collect a response by buttons.
      * @param message Message to collect button interactions on.
      * @param target Target user to collect from.
-     * @param retrieve Method which takes a collected button interaction and returns a desired result, or `undefined` if invalid.
+     * @param retriever Method which takes a collected button interaction and returns a desired result, or `undefined` if invalid.
      * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
-     * @param expire Method which is run if the timer expires.
+     * @param onExpire Method which is run if the timer expires.
      * @param options Options to use for collecting.
      * @returns A desired result, or `undefined` if the collector expired.
      */
     public static async collectByButton<T>(
         message: Message,
         target: User,
-        retrieve: ButtonRetriever<T>,
+        retriever: ButtonRetriever<T>,
         stopFilter: StopFilter,
-        expire: ExpireFunction,
+        onExpire: ExpireFunction,
         options: CollectOptions = { time: 60000, reset: false }
     ): Promise<
         | {
@@ -77,7 +77,7 @@ export class CollectorUtils {
             let expired = true;
 
             btnCollector.on('collect', async (intr: ButtonInteraction) => {
-                let result = await retrieve(intr);
+                let result = await retriever(intr);
                 if (result === undefined) {
                     if (options.reset) {
                         btnCollector.resetTimer();
@@ -95,7 +95,7 @@ export class CollectorUtils {
             btnCollector.on('end', async collected => {
                 stopCollector.stop();
                 if (expired) {
-                    await expire();
+                    await onExpire();
                 }
             });
 
@@ -111,18 +111,18 @@ export class CollectorUtils {
      * Collect a response by select menu.
      * @param message Message to collect select menu interactions on.
      * @param target Target user to collect from.
-     * @param retrieve Method which takes a collected select menu interaction and returns a desired result, or `undefined` if invalid.
+     * @param retriever Method which takes a collected select menu interaction and returns a desired result, or `undefined` if invalid.
      * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
-     * @param expire Method which is run if the timer expires.
+     * @param onExpire Method which is run if the timer expires.
      * @param options Options to use for collecting.
      * @returns A desired result, or `undefined` if the collector expired.
      */
     public static async collectBySelectMenu<T>(
         message: Message,
         target: User,
-        retrieve: SelectMenuRetriever<T>,
+        retriever: SelectMenuRetriever<T>,
         stopFilter: StopFilter,
-        expire: ExpireFunction,
+        onExpire: ExpireFunction,
         options: CollectOptions = { time: 60000, reset: false }
     ): Promise<
         | {
@@ -149,7 +149,7 @@ export class CollectorUtils {
             let expired = true;
 
             smCollector.on('collect', async (intr: SelectMenuInteraction) => {
-                let result = await retrieve(intr);
+                let result = await retriever(intr);
                 if (result === undefined) {
                     if (options.reset) {
                         smCollector.resetTimer();
@@ -167,7 +167,7 @@ export class CollectorUtils {
             smCollector.on('end', async collected => {
                 stopCollector.stop();
                 if (expired) {
-                    await expire();
+                    await onExpire();
                 }
             });
 
@@ -184,9 +184,9 @@ export class CollectorUtils {
      * @param message Message to collect button interactions on.
      * @param modal The modal to show when the button is clicked.
      * @param target Target user to collect from.
-     * @param retrieve Method which takes a collected modal interaction and returns a desired result, or `undefined` if invalid.
+     * @param retriever Method which takes a collected modal interaction and returns a desired result, or `undefined` if invalid.
      * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
-     * @param expire Method which is run if the timer expires.
+     * @param onExpire Method which is run if the timer expires.
      * @param options Options to use for collecting.
      * @returns A desired result, or `undefined` if the collector expired.
      */
@@ -194,9 +194,9 @@ export class CollectorUtils {
         message: Message,
         modal: Modal,
         target: User,
-        retrieve: ModalRetriever<T>,
+        retriever: ModalRetriever<T>,
         stopFilter: StopFilter,
-        expire: ExpireFunction,
+        onExpire: ExpireFunction,
         options: CollectOptions = { time: 60000, reset: false }
     ): Promise<
         | {
@@ -238,7 +238,7 @@ export class CollectorUtils {
                     return;
                 }
 
-                let result = await retrieve(modalIntr);
+                let result = await retriever(modalIntr);
                 if (result === undefined) {
                     if (options.reset) {
                         btnCollector.resetTimer();
@@ -256,7 +256,7 @@ export class CollectorUtils {
             btnCollector.on('end', async collected => {
                 stopCollector.stop();
                 if (expired) {
-                    await expire();
+                    await onExpire();
                 }
             });
 
@@ -272,18 +272,18 @@ export class CollectorUtils {
      * Collect a response by reactions.
      * @param message Message to collect reactions on.
      * @param target Target user to collect from.
-     * @param retrieve Method which takes a collected reaction and returns a desired result, or `undefined` if invalid.
+     * @param retriever Method which takes a collected reaction and returns a desired result, or `undefined` if invalid.
      * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
-     * @param expire Method which is run if the timer expires.
+     * @param onExpire Method which is run if the timer expires.
      * @param options Options to use for collecting.
      * @returns A desired result, or `undefined` if the collector expired.
      */
     public static async collectByReaction<T>(
         message: Message,
         target: User,
-        retrieve: ReactionRetriever<T>,
+        retriever: ReactionRetriever<T>,
         stopFilter: StopFilter,
-        expire: ExpireFunction,
+        onExpire: ExpireFunction,
         options: CollectOptions = { time: 60000, reset: false }
     ): Promise<T> {
         return new Promise(async (resolve, reject) => {
@@ -303,7 +303,7 @@ export class CollectorUtils {
             let expired = true;
 
             reactCollector.on('collect', async (msgReaction: MessageReaction, reactor: User) => {
-                let result = await retrieve(msgReaction, reactor);
+                let result = await retriever(msgReaction, reactor);
                 if (result === undefined) {
                     if (options.reset) {
                         reactCollector.resetTimer();
@@ -321,7 +321,7 @@ export class CollectorUtils {
             reactCollector.on('end', async collected => {
                 stopCollector.stop();
                 if (expired) {
-                    await expire();
+                    await onExpire();
                 }
             });
 
@@ -337,18 +337,18 @@ export class CollectorUtils {
      * Collect a response by messages.
      * @param channel Channel to collect messages on.
      * @param target Target user to collect from.
-     * @param retrieve Method which takes a collected message and returns a desired result, or `undefined` if invalid.
+     * @param retriever Method which takes a collected message and returns a desired result, or `undefined` if invalid.
      * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
-     * @param expire Method which is run if the timer expires.
+     * @param onExpire Method which is run if the timer expires.
      * @param options Options to use for collecting.
      * @returns A desired result, or `undefined` if the collector expired.
      */
     public static async collectByMessage<T>(
         channel: TextBasedChannel,
         target: User,
-        retrieve: MessageRetriever<T>,
+        retriever: MessageRetriever<T>,
         stopFilter: StopFilter,
-        expire: ExpireFunction,
+        onExpire: ExpireFunction,
         options: CollectOptions = { time: 60000, reset: false }
     ): Promise<T> {
         return new Promise(async (resolve, reject) => {
@@ -374,7 +374,7 @@ export class CollectorUtils {
                     return;
                 }
 
-                let result = await retrieve(nextMsg);
+                let result = await retriever(nextMsg);
                 if (result === undefined) {
                     if (options.reset) {
                         msgCollector.resetTimer();
@@ -392,7 +392,7 @@ export class CollectorUtils {
             msgCollector.on('end', async collected => {
                 stopCollector.stop();
                 if (expired) {
-                    await expire();
+                    await onExpire();
                 }
             });
 
