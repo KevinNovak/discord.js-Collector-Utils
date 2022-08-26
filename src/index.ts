@@ -39,7 +39,7 @@ export class CollectorUtils {
      * Collect a response by buttons.
      * @param message Message to collect button interactions on.
      * @param target Target user to collect from.
-     * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
+     * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      * @param retrieve Method which takes a collected button interaction and returns a desired result, or `undefined` if invalid.
      * @param expire Method which is run if the timer expires.
      * @param options Options to use for collecting.
@@ -111,7 +111,7 @@ export class CollectorUtils {
      * Collect a response by select menu.
      * @param message Message to collect select menu interactions on.
      * @param target Target user to collect from.
-     * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
+     * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      * @param retrieve Method which takes a collected select menu interaction and returns a desired result, or `undefined` if invalid.
      * @param expire Method which is run if the timer expires.
      * @param options Options to use for collecting.
@@ -184,7 +184,7 @@ export class CollectorUtils {
      * @param message Message to collect button interactions on.
      * @param modal The modal to show when the button is clicked.
      * @param target Target user to collect from.
-     * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
+     * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      * @param retrieve Method which takes a collected modal interaction and returns a desired result, or `undefined` if invalid.
      * @param expire Method which is run if the timer expires.
      * @param options Options to use for collecting.
@@ -272,7 +272,7 @@ export class CollectorUtils {
      * Collect a response by reactions.
      * @param message Message to collect reactions on.
      * @param target Target user to collect from.
-     * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
+     * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      * @param retrieve Method which takes a collected reaction and returns a desired result, or `undefined` if invalid.
      * @param expire Method which is run if the timer expires.
      * @param options Options to use for collecting.
@@ -337,7 +337,7 @@ export class CollectorUtils {
      * Collect a response by messages.
      * @param channel Channel to collect messages on.
      * @param target Target user to collect from.
-     * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
+     * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      * @param retrieve Method which takes a collected message and returns a desired result, or `undefined` if invalid.
      * @param expire Method which is run if the timer expires.
      * @param options Options to use for collecting.
