@@ -9,7 +9,6 @@ import {
     User,
 } from 'discord.js';
 
-export declare type StopFilter = (nextMsg: Message) => boolean;
 export declare type ButtonRetriever<T> = (intr: ButtonInteraction) => Promise<{
     intr: ButtonInteraction;
     value: T;
@@ -27,6 +26,7 @@ export declare type ReactionRetriever<T> = (
     reactor: User
 ) => Promise<T | undefined>;
 export declare type MessageRetriever<T> = (nextMsg: Message) => Promise<T | undefined>;
+export declare type StopFilter = (nextMsg: Message) => boolean;
 export declare type ExpireFunction = () => Promise<void>;
 
 export declare interface CollectOptions {
@@ -39,8 +39,8 @@ export class CollectorUtils {
      * Collect a response by buttons.
      * @param message Message to collect button interactions on.
      * @param target Target user to collect from.
-     * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      * @param retrieve Method which takes a collected button interaction and returns a desired result, or `undefined` if invalid.
+     * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      * @param expire Method which is run if the timer expires.
      * @param options Options to use for collecting.
      * @returns A desired result, or `undefined` if the collector expired.
@@ -48,8 +48,8 @@ export class CollectorUtils {
     public static async collectByButton<T>(
         message: Message,
         target: User,
-        stopFilter: StopFilter,
         retrieve: ButtonRetriever<T>,
+        stopFilter: StopFilter,
         expire: ExpireFunction,
         options: CollectOptions = { time: 60000, reset: false }
     ): Promise<
@@ -111,8 +111,8 @@ export class CollectorUtils {
      * Collect a response by select menu.
      * @param message Message to collect select menu interactions on.
      * @param target Target user to collect from.
-     * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      * @param retrieve Method which takes a collected select menu interaction and returns a desired result, or `undefined` if invalid.
+     * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      * @param expire Method which is run if the timer expires.
      * @param options Options to use for collecting.
      * @returns A desired result, or `undefined` if the collector expired.
@@ -120,8 +120,8 @@ export class CollectorUtils {
     public static async collectBySelectMenu<T>(
         message: Message,
         target: User,
-        stopFilter: StopFilter,
         retrieve: SelectMenuRetriever<T>,
+        stopFilter: StopFilter,
         expire: ExpireFunction,
         options: CollectOptions = { time: 60000, reset: false }
     ): Promise<
@@ -184,8 +184,8 @@ export class CollectorUtils {
      * @param message Message to collect button interactions on.
      * @param modal The modal to show when the button is clicked.
      * @param target Target user to collect from.
-     * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      * @param retrieve Method which takes a collected modal interaction and returns a desired result, or `undefined` if invalid.
+     * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      * @param expire Method which is run if the timer expires.
      * @param options Options to use for collecting.
      * @returns A desired result, or `undefined` if the collector expired.
@@ -194,8 +194,8 @@ export class CollectorUtils {
         message: Message,
         modal: Modal,
         target: User,
-        stopFilter: StopFilter,
         retrieve: ModalRetriever<T>,
+        stopFilter: StopFilter,
         expire: ExpireFunction,
         options: CollectOptions = { time: 60000, reset: false }
     ): Promise<
@@ -272,8 +272,8 @@ export class CollectorUtils {
      * Collect a response by reactions.
      * @param message Message to collect reactions on.
      * @param target Target user to collect from.
-     * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      * @param retrieve Method which takes a collected reaction and returns a desired result, or `undefined` if invalid.
+     * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      * @param expire Method which is run if the timer expires.
      * @param options Options to use for collecting.
      * @returns A desired result, or `undefined` if the collector expired.
@@ -281,8 +281,8 @@ export class CollectorUtils {
     public static async collectByReaction<T>(
         message: Message,
         target: User,
-        stopFilter: StopFilter,
         retrieve: ReactionRetriever<T>,
+        stopFilter: StopFilter,
         expire: ExpireFunction,
         options: CollectOptions = { time: 60000, reset: false }
     ): Promise<T> {
@@ -337,8 +337,8 @@ export class CollectorUtils {
      * Collect a response by messages.
      * @param channel Channel to collect messages on.
      * @param target Target user to collect from.
-     * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      * @param retrieve Method which takes a collected message and returns a desired result, or `undefined` if invalid.
+     * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      * @param expire Method which is run if the timer expires.
      * @param options Options to use for collecting.
      * @returns A desired result, or `undefined` if the collector expired.
@@ -346,8 +346,8 @@ export class CollectorUtils {
     public static async collectByMessage<T>(
         channel: TextBasedChannel,
         target: User,
-        stopFilter: StopFilter,
         retrieve: MessageRetriever<T>,
+        stopFilter: StopFilter,
         expire: ExpireFunction,
         options: CollectOptions = { time: 60000, reset: false }
     ): Promise<T> {
