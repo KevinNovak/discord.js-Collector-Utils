@@ -37,7 +37,7 @@ export declare interface CollectOptions {
 export class CollectorUtils {
     /**
      * Collect a response by buttons.
-     * @param msg The message to collect button interactions on.
+     * @param msg Message to collect button interactions on.
      * @param target Target user to collect from.
      * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
      * @param retrieve Method which takes a collected button interaction and returns a desired result, or `undefined` if invalid.
@@ -109,7 +109,7 @@ export class CollectorUtils {
 
     /**
      * Collect a response by select menu.
-     * @param msg The message to collect select menu interactions on.
+     * @param msg Message to collect select menu interactions on.
      * @param target Target user to collect from.
      * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
      * @param retrieve Method which takes a collected select menu interaction and returns a desired result, or `undefined` if invalid.
@@ -181,7 +181,7 @@ export class CollectorUtils {
 
     /**
      * Collect a response through a modal.
-     * @param msg The message to collect button interactions on.
+     * @param msg Message to collect button interactions on.
      * @param modal The modal to show when the button is clicked.
      * @param target Target user to collect from.
      * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
@@ -270,7 +270,7 @@ export class CollectorUtils {
 
     /**
      * Collect a response by reactions.
-     * @param msg The message to collect reactions on.
+     * @param msg Message to collect reactions on.
      * @param target Target user to collect from.
      * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
      * @param retrieve Method which takes a collected reaction and returns a desired result, or `undefined` if invalid.
@@ -335,7 +335,7 @@ export class CollectorUtils {
 
     /**
      * Collect a response by messages.
-     * @param channel The channel to collect messages on.
+     * @param channel Channel to collect messages on.
      * @param target Target user to collect from.
      * @param stopFilter Filter which takes an incoming message and returns a boolean as to whether the collector should be silently stopped.
      * @param retrieve Method which takes a collected message and returns a desired result, or `undefined` if invalid.
