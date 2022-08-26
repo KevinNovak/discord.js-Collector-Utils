@@ -67,12 +67,9 @@ async function start(): Promise<void> {
 
                     let result = await CollectorUtils.collectByButton(
                         prompt,
-                        // Collect Filter
-                        buttonInteraction => buttonInteraction.user.id === user.id,
+                        user,
                         // Stop Filter
-                        message =>
-                            message.author.id === user.id &&
-                            message.content.toLowerCase() === 'stop',
+                        message => message.content.toLowerCase() === 'stop',
                         // Retrieve Result
                         async buttonInteraction => {
                             switch (buttonInteraction.customId) {
@@ -137,12 +134,9 @@ async function start(): Promise<void> {
 
                     let result = await CollectorUtils.collectBySelectMenu(
                         prompt,
-                        // Collect Filter
-                        selectMenuInteraction => selectMenuInteraction.user.id === user.id,
+                        user,
                         // Stop Filter
-                        message =>
-                            message.author.id === user.id &&
-                            message.content.toLowerCase() === 'stop',
+                        message => message.content.toLowerCase() === 'stop',
                         // Retrieve Result
                         async selectMenuInteraction => {
                             return {
@@ -205,12 +199,9 @@ async function start(): Promise<void> {
                                 },
                             ],
                         }),
-                        // Collect Filter
-                        buttonInteraction => buttonInteraction.user.id === user.id,
+                        user,
                         // Stop Filter
-                        message =>
-                            message.author.id === user.id &&
-                            message.content.toLowerCase() === 'stop',
+                        message => message.content.toLowerCase() === 'stop',
                         // Retrieve Result
                         async buttonInteraction => {
                             let textInput = buttonInteraction.components[0].components[0];
@@ -249,12 +240,9 @@ async function start(): Promise<void> {
 
                     let favoriteFruit = await CollectorUtils.collectByReaction(
                         prompt,
-                        // Collect Filter
-                        (messageReaction, reactor) => reactor.id === user.id,
+                        user,
                         // Stop Filter
-                        message =>
-                            message.author.id === user.id &&
-                            message.content.toLowerCase() === 'stop',
+                        message => message.content.toLowerCase() === 'stop',
                         // Retrieve Result
                         async (messageReaction, user) => {
                             switch (messageReaction.emoji.name) {
@@ -289,12 +277,9 @@ async function start(): Promise<void> {
 
                     let favoriteColor = await CollectorUtils.collectByMessage(
                         channel,
-                        // Collect Filter
-                        message => message.author.id === user.id,
+                        user,
                         // Stop Filter
-                        message =>
-                            message.author.id === user.id &&
-                            message.content.toLowerCase() === 'stop',
+                        message => message.content.toLowerCase() === 'stop',
                         // Retrieve Result
                         async message => {
                             let colorOptions = [
