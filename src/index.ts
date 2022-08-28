@@ -75,7 +75,7 @@ export class CollectorUtils {
 
             btnCollector.on('end', async collected => {
                 stopCollector.stop();
-                if (expired) {
+                if (expired && options.onExpire) {
                     await options.onExpire();
                 }
             });
@@ -153,7 +153,7 @@ export class CollectorUtils {
 
             smCollector.on('end', async collected => {
                 stopCollector.stop();
-                if (expired) {
+                if (expired && options.onExpire) {
                     await options.onExpire();
                 }
             });
@@ -248,7 +248,7 @@ export class CollectorUtils {
 
             btnCollector.on('end', async collected => {
                 stopCollector.stop();
-                if (expired) {
+                if (expired && options.onExpire) {
                     await options.onExpire();
                 }
             });
@@ -316,7 +316,7 @@ export class CollectorUtils {
 
             reactCollector.on('end', async collected => {
                 stopCollector.stop();
-                if (expired) {
+                if (expired && options.onExpire) {
                     await options.onExpire();
                 }
             });
@@ -390,7 +390,7 @@ export class CollectorUtils {
 
             msgCollector.on('end', async collected => {
                 stopCollector.stop();
-                if (expired) {
+                if (expired && options.onExpire) {
                     await options.onExpire();
                 }
             });
