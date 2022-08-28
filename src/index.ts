@@ -9,9 +9,6 @@ import {
     User,
 } from 'discord.js';
 
-export declare type StopFilter = (nextMsg: Message) => boolean;
-export declare type ExpireFunction = () => Promise<void>;
-
 export class CollectorUtils {
     /**
      * Collect a response by buttons.
@@ -345,11 +342,11 @@ interface CollectByButtonOptions<T> {
     /**
      * Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      */
-    stopFilter: StopFilter;
+    stopFilter: (message: Message) => boolean;
     /**
      * Method which is run if the timer expires.
      */
-    onExpire: ExpireFunction;
+    onExpire: () => Promise<void>;
     /**
      * Time in milliseconds before the collector expires.
      */
@@ -379,11 +376,11 @@ interface CollectBySelectMenuOptions<T> {
     /**
      * Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      */
-    stopFilter: StopFilter;
+    stopFilter: (message: Message) => boolean;
     /**
      * Method which is run if the timer expires.
      */
-    onExpire: ExpireFunction;
+    onExpire: () => Promise<void>;
     /**
      * Time in milliseconds before the collector expires.
      */
@@ -417,11 +414,11 @@ interface CollectByModalOptions<T> {
     /**
      * Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      */
-    stopFilter: StopFilter;
+    stopFilter: (message: Message) => boolean;
     /**
      * Method which is run if the timer expires.
      */
-    onExpire: ExpireFunction;
+    onExpire: () => Promise<void>;
     /**
      * Time in milliseconds before the collector expires.
      */
@@ -448,11 +445,11 @@ interface CollectByReactionOptions<T> {
     /**
      * Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      */
-    stopFilter: StopFilter;
+    stopFilter: (message: Message) => boolean;
     /**
      * Method which is run if the timer expires.
      */
-    onExpire: ExpireFunction;
+    onExpire: () => Promise<void>;
     /**
      * Time in milliseconds before the collector expires.
      */
@@ -479,11 +476,11 @@ interface CollectByMessageOptions<T> {
     /**
      * Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      */
-    stopFilter: StopFilter;
+    stopFilter: (message: Message) => boolean;
     /**
      * Method which is run if the timer expires.
      */
-    onExpire: ExpireFunction;
+    onExpire: () => Promise<void>;
     /**
      * Time in milliseconds before the collector expires.
      */
