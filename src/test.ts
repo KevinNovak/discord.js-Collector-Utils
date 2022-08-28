@@ -82,13 +82,13 @@ async function start(): Promise<void> {
                         },
                         // Options
                         {
+                            time: 10000,
+                            reset: true,
                             target: user,
                             stopFilter: message => message.content.toLowerCase() === 'stop',
                             onExpire: async () => {
                                 await channel.send('Too slow! Try being more decisive next time.');
                             },
-                            time: 10000,
-                            reset: true,
                         }
                     );
 
@@ -144,13 +144,13 @@ async function start(): Promise<void> {
                         },
                         // Options
                         {
+                            time: 10000,
+                            reset: true,
                             target: user,
                             stopFilter: message => message.content.toLowerCase() === 'stop',
                             onExpire: async () => {
                                 await channel.send('Too slow! Try being more decisive next time.');
                             },
-                            time: 10000,
-                            reset: true,
                         }
                     );
 
@@ -216,13 +216,13 @@ async function start(): Promise<void> {
                         },
                         // Options
                         {
+                            time: 10000,
+                            reset: true,
                             target: user,
                             stopFilter: message => message.content.toLowerCase() === 'stop',
                             onExpire: async () => {
                                 await channel.send('Too slow! Try being more decisive next time.');
                             },
-                            time: 10000,
-                            reset: true,
                         }
                     );
 
@@ -258,13 +258,13 @@ async function start(): Promise<void> {
                         },
                         // Options
                         {
+                            time: 10000,
+                            reset: true,
                             target: user,
                             stopFilter: message => message.content.toLowerCase() === 'stop',
                             onExpire: async () => {
                                 await channel.send('Too slow! Try being more decisive next time.');
                             },
-                            time: 10000,
-                            reset: true,
                         }
                     );
 
@@ -312,13 +312,13 @@ async function start(): Promise<void> {
                         },
                         // Options
                         {
+                            time: 10000,
+                            reset: true,
                             target: user,
                             stopFilter: message => message.content.toLowerCase() === 'stop',
                             onExpire: async () => {
                                 await channel.send(`Too slow! Try being more decisive next time.`);
                             },
-                            time: 10000,
-                            reset: true,
                         }
                     );
 

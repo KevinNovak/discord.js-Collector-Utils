@@ -406,6 +406,16 @@ export class CollectorUtils {
 
 interface CollectOptions {
     /**
+     * Time in milliseconds before the collector expires.
+     * @defaultValue `120000` (2 minutes)
+     */
+    time?: number;
+    /**
+     * Whether the collector time should be reset on a invalid response.
+     * @defaultValue `true`
+     */
+    reset?: boolean;
+    /**
      * Target user to collect from.
      */
     target?: User;
@@ -417,12 +427,4 @@ interface CollectOptions {
      * Method which is run if the timer expires.
      */
     onExpire?: () => void | Promise<void>;
-    /**
-     * Time in milliseconds before the collector expires.
-     */
-    time?: number;
-    /**
-     * Whether the collector time should be reset on a invalid response.
-     */
-    reset?: boolean;
 }
