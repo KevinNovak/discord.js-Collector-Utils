@@ -348,15 +348,34 @@ export class CollectorUtils {
     }
 }
 
-interface CollectByButtonOptions<T> {
-    /**
-     * Message to collect button interactions on.
-     */
-    message: Message;
+interface BaseCollectOptions {
     /**
      * Target user to collect from.
      */
     target: User;
+    /**
+     * Method which takes message and returns a boolean as to whether the collector should be silently stopped.
+     */
+    stopFilter: (message: Message) => boolean;
+    /**
+     * Method which is run if the timer expires.
+     */
+    onExpire: () => void | Promise<void>;
+    /**
+     * Time in milliseconds before the collector expires.
+     */
+    time?: number;
+    /**
+     * Whether the collector time should be reset on a invalid response.
+     */
+    reset?: boolean;
+}
+
+interface CollectByButtonOptions<T> extends BaseCollectOptions {
+    /**
+     * Message to collect button interactions on.
+     */
+    message: Message;
     /**
      * Method which takes a collected button interaction and returns a desired result, or `undefined` if invalid.
      */
@@ -364,33 +383,13 @@ interface CollectByButtonOptions<T> {
         intr: ButtonInteraction;
         value: T;
     }>;
-    /**
-     * Method which takes message and returns a boolean as to whether the collector should be silently stopped.
-     */
-    stopFilter: (message: Message) => boolean;
-    /**
-     * Method which is run if the timer expires.
-     */
-    onExpire: () => void | Promise<void>;
-    /**
-     * Time in milliseconds before the collector expires.
-     */
-    time?: number;
-    /**
-     * Whether the collector time should be reset on a invalid response.
-     */
-    reset?: boolean;
 }
 
-interface CollectBySelectMenuOptions<T> {
+interface CollectBySelectMenuOptions<T> extends BaseCollectOptions {
     /**
      * Message to collect select menu interactions on.
      */
     message: Message;
-    /**
-     * Target user to collect from.
-     */
-    target: User;
     /**
      * Method which takes a collected select menu interaction and returns a desired result, or `undefined` if invalid.
      */
@@ -398,25 +397,9 @@ interface CollectBySelectMenuOptions<T> {
         intr: SelectMenuInteraction;
         value: T;
     }>;
-    /**
-     * Method which takes message and returns a boolean as to whether the collector should be silently stopped.
-     */
-    stopFilter: (message: Message) => boolean;
-    /**
-     * Method which is run if the timer expires.
-     */
-    onExpire: () => void | Promise<void>;
-    /**
-     * Time in milliseconds before the collector expires.
-     */
-    time?: number;
-    /**
-     * Whether the collector time should be reset on a invalid response.
-     */
-    reset?: boolean;
 }
 
-interface CollectByModalOptions<T> {
+interface CollectByModalOptions<T> extends BaseCollectOptions {
     /**
      * Message to collect button interactions on.
      */
@@ -426,92 +409,32 @@ interface CollectByModalOptions<T> {
      */
     modal: Modal;
     /**
-     * Target user to collect from.
-     */
-    target: User;
-    /**
      * Method which takes a collected modal interaction and returns a desired result, or `undefined` if invalid.
      */
     retriever: (intr: ModalSubmitInteraction) => Promise<{
         intr: ModalSubmitInteraction;
         value: T;
     }>;
-    /**
-     * Method which takes message and returns a boolean as to whether the collector should be silently stopped.
-     */
-    stopFilter: (message: Message) => boolean;
-    /**
-     * Method which is run if the timer expires.
-     */
-    onExpire: () => void | Promise<void>;
-    /**
-     * Time in milliseconds before the collector expires.
-     */
-    time?: number;
-    /**
-     * Whether the collector time should be reset on a invalid response.
-     */
-    reset?: boolean;
 }
 
-interface CollectByReactionOptions<T> {
+interface CollectByReactionOptions<T> extends BaseCollectOptions {
     /**
      * Message to collect reactions on.
      */
     message: Message;
     /**
-     * Target user to collect from.
-     */
-    target: User;
-    /**
      * Method which takes a collected reaction and returns a desired result, or `undefined` if invalid.
      */
     retriever: (msgReaction: MessageReaction, reactor: User) => Promise<T | undefined>;
-    /**
-     * Method which takes message and returns a boolean as to whether the collector should be silently stopped.
-     */
-    stopFilter: (message: Message) => boolean;
-    /**
-     * Method which is run if the timer expires.
-     */
-    onExpire: () => void | Promise<void>;
-    /**
-     * Time in milliseconds before the collector expires.
-     */
-    time?: number;
-    /**
-     * Whether the collector time should be reset on a invalid response.
-     */
-    reset?: boolean;
 }
 
-interface CollectByMessageOptions<T> {
+interface CollectByMessageOptions<T> extends BaseCollectOptions {
     /**
      * Channel to collect messages on.
      */
     channel: TextBasedChannel;
     /**
-     * Target user to collect from.
-     */
-    target: User;
-    /**
      * Method which takes a collected message and returns a desired result, or `undefined` if invalid.
      */
     retriever: (nextMsg: Message) => Promise<T | undefined>;
-    /**
-     * Method which takes message and returns a boolean as to whether the collector should be silently stopped.
-     */
-    stopFilter: (message: Message) => boolean;
-    /**
-     * Method which is run if the timer expires.
-     */
-    onExpire: () => void | Promise<void>;
-    /**
-     * Time in milliseconds before the collector expires.
-     */
-    time?: number;
-    /**
-     * Whether the collector time should be reset on a invalid response.
-     */
-    reset?: boolean;
 }
