@@ -22,6 +22,11 @@ export class CollectorUtils {
           }
         | undefined
     > {
+        options = Object.assign(options, {
+            time: 120000,
+            reset: true,
+        } as CollectByButtonOptions<T>);
+
         return new Promise(async (resolve, reject) => {
             let btnCollector = options.message.createMessageComponentCollector({
                 componentType: 'BUTTON',
@@ -83,6 +88,11 @@ export class CollectorUtils {
           }
         | undefined
     > {
+        options = Object.assign(options, {
+            time: 120000,
+            reset: true,
+        } as CollectBySelectMenuOptions<T>);
+
         return new Promise(async (resolve, reject) => {
             let smCollector = options.message.createMessageComponentCollector({
                 componentType: 'SELECT_MENU',
@@ -144,6 +154,11 @@ export class CollectorUtils {
           }
         | undefined
     > {
+        options = Object.assign(options, {
+            time: 120000,
+            reset: true,
+        } as CollectByModalOptions<T>);
+
         return new Promise(async (resolve, reject) => {
             let btnCollector = options.message.createMessageComponentCollector({
                 componentType: 'BUTTON',
@@ -214,6 +229,11 @@ export class CollectorUtils {
      * @returns A desired result, or `undefined` if the collector expired.
      */
     public static async collectByReaction<T>(options: CollectByReactionOptions<T>): Promise<T> {
+        options = Object.assign(options, {
+            time: 120000,
+            reset: true,
+        } as CollectByReactionOptions<T>);
+
         return new Promise(async (resolve, reject) => {
             let reactCollector = options.message.createReactionCollector({
                 filter: (msgReaction, reactor) => reactor.id === options.target.id,
@@ -268,6 +288,11 @@ export class CollectorUtils {
      * @returns A desired result, or `undefined` if the collector expired.
      */
     public static async collectByMessage<T>(options: CollectByMessageOptions<T>): Promise<T> {
+        options = Object.assign(options, {
+            time: 120000,
+            reset: true,
+        } as CollectByMessageOptions<T>);
+
         return new Promise(async (resolve, reject) => {
             let msgCollector = options.channel.createMessageCollector({
                 filter: message => message.author.id === options.target.id,
@@ -346,15 +371,15 @@ interface CollectByButtonOptions<T> {
     /**
      * Method which is run if the timer expires.
      */
-    onExpire: () => Promise<void>;
+    onExpire: () => void | Promise<void>;
     /**
      * Time in milliseconds before the collector expires.
      */
-    time: number;
+    time?: number;
     /**
      * Whether the collector time should be reset on a invalid response.
      */
-    reset: boolean;
+    reset?: boolean;
 }
 
 interface CollectBySelectMenuOptions<T> {
@@ -380,15 +405,15 @@ interface CollectBySelectMenuOptions<T> {
     /**
      * Method which is run if the timer expires.
      */
-    onExpire: () => Promise<void>;
+    onExpire: () => void | Promise<void>;
     /**
      * Time in milliseconds before the collector expires.
      */
-    time: number;
+    time?: number;
     /**
      * Whether the collector time should be reset on a invalid response.
      */
-    reset: boolean;
+    reset?: boolean;
 }
 
 interface CollectByModalOptions<T> {
@@ -418,15 +443,15 @@ interface CollectByModalOptions<T> {
     /**
      * Method which is run if the timer expires.
      */
-    onExpire: () => Promise<void>;
+    onExpire: () => void | Promise<void>;
     /**
      * Time in milliseconds before the collector expires.
      */
-    time: number;
+    time?: number;
     /**
      * Whether the collector time should be reset on a invalid response.
      */
-    reset: boolean;
+    reset?: boolean;
 }
 
 interface CollectByReactionOptions<T> {
@@ -449,15 +474,15 @@ interface CollectByReactionOptions<T> {
     /**
      * Method which is run if the timer expires.
      */
-    onExpire: () => Promise<void>;
+    onExpire: () => void | Promise<void>;
     /**
      * Time in milliseconds before the collector expires.
      */
-    time: number;
+    time?: number;
     /**
      * Whether the collector time should be reset on a invalid response.
      */
-    reset: boolean;
+    reset?: boolean;
 }
 
 interface CollectByMessageOptions<T> {
@@ -480,13 +505,13 @@ interface CollectByMessageOptions<T> {
     /**
      * Method which is run if the timer expires.
      */
-    onExpire: () => Promise<void>;
+    onExpire: () => void | Promise<void>;
     /**
      * Time in milliseconds before the collector expires.
      */
-    time: number;
+    time?: number;
     /**
      * Whether the collector time should be reset on a invalid response.
      */
-    reset: boolean;
+    reset?: boolean;
 }
