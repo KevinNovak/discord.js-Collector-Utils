@@ -42,18 +42,36 @@ export class CollectorUtils {
         return new Promise(async (resolve, reject) => {
             let btnCollector = message.createMessageComponentCollector({
                 componentType: 'BUTTON',
-                filter: intr => intr.user.id === options.target.id,
+                filter: intr => {
+                    if (options.target) {
+                        return intr.user.id === options.target.id;
+                    }
+
+                    return true;
+                },
                 time: options.time,
             });
 
-            let stopCollector = message.channel.createMessageCollector(
+            let stopCollector = message.channel.createMessageCollector({
+                filter: message => {
+                    if (!options.stopFilter) {
+                        return false;
+                    }
+
+                    let stop = options.stopFilter(message);
+                    if (!stop) {
+                        return false;
+                    }
+
+                    if (options.target) {
+                        return message.author.id === options.target.id;
+                    }
+
+                    return true;
+                },
                 // Make sure message collector is ahead of reaction collector
-                {
-                    filter: message =>
-                        message.author.id === options.target.id && options.stopFilter(message),
-                    time: options.time + 1000,
-                }
-            );
+                time: options.time + 1000,
+            });
 
             let expired = true;
 
@@ -120,18 +138,36 @@ export class CollectorUtils {
         return new Promise(async (resolve, reject) => {
             let smCollector = message.createMessageComponentCollector({
                 componentType: 'SELECT_MENU',
-                filter: intr => intr.user.id === options.target.id,
+                filter: intr => {
+                    if (options.target) {
+                        return intr.user.id === options.target.id;
+                    }
+
+                    return true;
+                },
                 time: options.time,
             });
 
-            let stopCollector = message.channel.createMessageCollector(
+            let stopCollector = message.channel.createMessageCollector({
+                filter: message => {
+                    if (!options.stopFilter) {
+                        return false;
+                    }
+
+                    let stop = options.stopFilter(message);
+                    if (!stop) {
+                        return false;
+                    }
+
+                    if (options.target) {
+                        return message.author.id === options.target.id;
+                    }
+
+                    return true;
+                },
                 // Make sure message collector is ahead of reaction collector
-                {
-                    filter: message =>
-                        message.author.id === options.target.id && options.stopFilter(message),
-                    time: options.time + 1000,
-                }
-            );
+                time: options.time + 1000,
+            });
 
             let expired = true;
 
@@ -200,18 +236,36 @@ export class CollectorUtils {
         return new Promise(async (resolve, reject) => {
             let btnCollector = message.createMessageComponentCollector({
                 componentType: 'BUTTON',
-                filter: intr => intr.user.id === options.target.id,
+                filter: intr => {
+                    if (options.target) {
+                        return intr.user.id === options.target.id;
+                    }
+
+                    return true;
+                },
                 time: options.time,
             });
 
-            let stopCollector = message.channel.createMessageCollector(
+            let stopCollector = message.channel.createMessageCollector({
+                filter: message => {
+                    if (!options.stopFilter) {
+                        return false;
+                    }
+
+                    let stop = options.stopFilter(message);
+                    if (!stop) {
+                        return false;
+                    }
+
+                    if (options.target) {
+                        return message.author.id === options.target.id;
+                    }
+
+                    return true;
+                },
                 // Make sure message collector is ahead of reaction collector
-                {
-                    filter: message =>
-                        message.author.id === options.target.id && options.stopFilter(message),
-                    time: options.time + 1000,
-                }
-            );
+                time: options.time + 1000,
+            });
 
             let expired = true;
 
@@ -283,18 +337,36 @@ export class CollectorUtils {
 
         return new Promise(async (resolve, reject) => {
             let reactCollector = message.createReactionCollector({
-                filter: (msgReaction, reactor) => reactor.id === options.target.id,
+                filter: (msgReaction, reactor) => {
+                    if (options.target) {
+                        return reactor.id === options.target.id;
+                    }
+
+                    return true;
+                },
                 time: options.time,
             });
 
-            let stopCollector = message.channel.createMessageCollector(
+            let stopCollector = message.channel.createMessageCollector({
+                filter: message => {
+                    if (!options.stopFilter) {
+                        return false;
+                    }
+
+                    let stop = options.stopFilter(message);
+                    if (!stop) {
+                        return false;
+                    }
+
+                    if (options.target) {
+                        return message.author.id === options.target.id;
+                    }
+
+                    return true;
+                },
                 // Make sure message collector is ahead of reaction collector
-                {
-                    filter: message =>
-                        message.author.id === options.target.id && options.stopFilter(message),
-                    time: options.time + 1000,
-                }
-            );
+                time: options.time + 1000,
+            });
 
             let expired = true;
 
@@ -351,18 +423,36 @@ export class CollectorUtils {
 
         return new Promise(async (resolve, reject) => {
             let msgCollector = channel.createMessageCollector({
-                filter: message => message.author.id === options.target.id,
+                filter: message => {
+                    if (options.target) {
+                        return message.author.id === options.target.id;
+                    }
+
+                    return true;
+                },
                 time: options.time,
             });
 
-            let stopCollector = channel.createMessageCollector(
+            let stopCollector = channel.createMessageCollector({
+                filter: message => {
+                    if (!options.stopFilter) {
+                        return false;
+                    }
+
+                    let stop = options.stopFilter(message);
+                    if (!stop) {
+                        return false;
+                    }
+
+                    if (options.target) {
+                        return message.author.id === options.target.id;
+                    }
+
+                    return true;
+                },
                 // Make sure message collector is ahead of reaction collector
-                {
-                    filter: message =>
-                        message.author.id === options.target.id && options.stopFilter(message),
-                    time: options.time + 1000,
-                }
-            );
+                time: options.time + 1000,
+            });
 
             let expired = true;
 
