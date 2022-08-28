@@ -23,7 +23,7 @@ export class CollectorUtils {
             intr: ButtonInteraction;
             value: T;
         }>,
-        options: CollectOptions
+        options: CollectOptions = {}
     ): Promise<
         | {
               intr: ButtonInteraction;
@@ -31,10 +31,13 @@ export class CollectorUtils {
           }
         | undefined
     > {
-        options = Object.assign(options, {
-            time: 120000,
-            reset: true,
-        } as CollectOptions);
+        options = Object.assign(
+            {
+                time: 120000,
+                reset: true,
+            } as CollectOptions,
+            options
+        );
 
         return new Promise(async (resolve, reject) => {
             let btnCollector = message.createMessageComponentCollector({
@@ -98,7 +101,7 @@ export class CollectorUtils {
             intr: SelectMenuInteraction;
             value: T;
         }>,
-        options: CollectOptions
+        options: CollectOptions = {}
     ): Promise<
         | {
               intr: SelectMenuInteraction;
@@ -106,10 +109,13 @@ export class CollectorUtils {
           }
         | undefined
     > {
-        options = Object.assign(options, {
-            time: 120000,
-            reset: true,
-        } as CollectOptions);
+        options = Object.assign(
+            {
+                time: 120000,
+                reset: true,
+            } as CollectOptions,
+            options
+        );
 
         return new Promise(async (resolve, reject) => {
             let smCollector = message.createMessageComponentCollector({
@@ -175,7 +181,7 @@ export class CollectorUtils {
             intr: ModalSubmitInteraction;
             value: T;
         }>,
-        options: CollectOptions
+        options: CollectOptions = {}
     ): Promise<
         | {
               intr: ModalSubmitInteraction;
@@ -183,10 +189,13 @@ export class CollectorUtils {
           }
         | undefined
     > {
-        options = Object.assign(options, {
-            time: 120000,
-            reset: true,
-        } as CollectOptions);
+        options = Object.assign(
+            {
+                time: 120000,
+                reset: true,
+            } as CollectOptions,
+            options
+        );
 
         return new Promise(async (resolve, reject) => {
             let btnCollector = message.createMessageComponentCollector({
@@ -262,12 +271,15 @@ export class CollectorUtils {
     public static async collectByReaction<T>(
         message: Message,
         retriever: (messageReaction: MessageReaction, reactor: User) => Promise<T | undefined>,
-        options: CollectOptions
+        options: CollectOptions = {}
     ): Promise<T> {
-        options = Object.assign(options, {
-            time: 120000,
-            reset: true,
-        } as CollectOptions);
+        options = Object.assign(
+            {
+                time: 120000,
+                reset: true,
+            } as CollectOptions,
+            options
+        );
 
         return new Promise(async (resolve, reject) => {
             let reactCollector = message.createReactionCollector({
@@ -327,12 +339,15 @@ export class CollectorUtils {
     public static async collectByMessage<T>(
         channel: TextBasedChannel,
         retriever: (message: Message) => Promise<T | undefined>,
-        options: CollectOptions
+        options: CollectOptions = {}
     ): Promise<T> {
-        options = Object.assign(options, {
-            time: 120000,
-            reset: true,
-        } as CollectOptions);
+        options = Object.assign(
+            {
+                time: 120000,
+                reset: true,
+            } as CollectOptions,
+            options
+        );
 
         return new Promise(async (resolve, reject) => {
             let msgCollector = channel.createMessageCollector({
@@ -393,15 +408,15 @@ interface CollectOptions {
     /**
      * Target user to collect from.
      */
-    target: User;
+    target?: User;
     /**
      * Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      */
-    stopFilter: (message: Message) => boolean;
+    stopFilter?: (message: Message) => boolean;
     /**
      * Method which is run if the timer expires.
      */
-    onExpire: () => void | Promise<void>;
+    onExpire?: () => void | Promise<void>;
     /**
      * Time in milliseconds before the collector expires.
      */
