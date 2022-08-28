@@ -129,25 +129,22 @@ async function start(): Promise<void> {
                         ],
                     });
 
-                    let result = await CollectorUtils.collectBySelectMenu(
-                        prompt,
-                        user,
-                        // Retrieve Result
-                        async selectMenuInteraction => {
+                    let result = await CollectorUtils.collectBySelectMenu({
+                        message: prompt,
+                        target: user,
+                        retriever: async selectMenuInteraction => {
                             return {
                                 intr: selectMenuInteraction,
                                 value: selectMenuInteraction.values[0],
                             };
                         },
-                        // Stop Filter
-                        message => message.content.toLowerCase() === 'stop',
-                        // Expire Function
-                        async () => {
+                        stopFilter: message => message.content.toLowerCase() === 'stop',
+                        onExpire: async () => {
                             await channel.send('Too slow! Try being more decisive next time.');
                         },
-                        // Options
-                        { time: 10000, reset: true }
-                    );
+                        time: 10000,
+                        reset: true,
+                    });
 
                     if (result === undefined) {
                         return;
@@ -176,9 +173,9 @@ async function start(): Promise<void> {
                         ],
                     });
 
-                    let result = await CollectorUtils.collectByModal(
-                        prompt,
-                        new Modal({
+                    let result = await CollectorUtils.collectByModal({
+                        message: prompt,
+                        modal: new Modal({
                             customId: 'modal', // Will be overwritten
                             title: client.user.username,
                             components: [
@@ -196,9 +193,8 @@ async function start(): Promise<void> {
                                 },
                             ],
                         }),
-                        user,
-                        // Retrieve Result
-                        async buttonInteraction => {
+                        target: user,
+                        retriever: async buttonInteraction => {
                             let textInput = buttonInteraction.components[0].components[0];
 
                             if (textInput.value.toLowerCase().includes('fight club')) {
@@ -210,15 +206,13 @@ async function start(): Promise<void> {
 
                             return { intr: buttonInteraction, value: textInput.value };
                         },
-                        // Stop Filter
-                        message => message.content.toLowerCase() === 'stop',
-                        // Expire Function
-                        async () => {
+                        stopFilter: message => message.content.toLowerCase() === 'stop',
+                        onExpire: async () => {
                             await channel.send('Too slow! Try being more decisive next time.');
                         },
-                        // Options
-                        { time: 10000, reset: true }
-                    );
+                        time: 10000,
+                        reset: true,
+                    });
 
                     if (result === undefined) {
                         return;
@@ -235,11 +229,10 @@ async function start(): Promise<void> {
                     prompt.react('🍎');
                     prompt.react('🍌');
 
-                    let favoriteFruit = await CollectorUtils.collectByReaction(
-                        prompt,
-                        user,
-                        // Retrieve Result
-                        async (messageReaction, user) => {
+                    let favoriteFruit = await CollectorUtils.collectByReaction({
+                        message: prompt,
+                        target: user,
+                        retriever: async (messageReaction, user) => {
                             switch (messageReaction.emoji.name) {
                                 case '🍉':
                                     return 'Watermelon';
@@ -251,15 +244,13 @@ async function start(): Promise<void> {
                                     return;
                             }
                         },
-                        // Stop Filter
-                        message => message.content.toLowerCase() === 'stop',
-                        // Expire Function
-                        async () => {
+                        stopFilter: message => message.content.toLowerCase() === 'stop',
+                        onExpire: async () => {
                             await channel.send('Too slow! Try being more decisive next time.');
                         },
-                        // Options
-                        { time: 10000, reset: true }
-                    );
+                        time: 10000,
+                        reset: true,
+                    });
 
                     if (favoriteFruit === undefined) {
                         return;
@@ -272,11 +263,10 @@ async function start(): Promise<void> {
                 case 'message': {
                     await channel.send('What is your favorite color?');
 
-                    let favoriteColor = await CollectorUtils.collectByMessage(
+                    let favoriteColor = await CollectorUtils.collectByMessage({
                         channel,
-                        user,
-                        // Retrieve Result
-                        async message => {
+                        target: user,
+                        retriever: async message => {
                             let colorOptions = [
                                 'red',
                                 'orange',
@@ -304,15 +294,13 @@ async function start(): Promise<void> {
 
                             return favoriteColor;
                         },
-                        // Stop Filter
-                        message => message.content.toLowerCase() === 'stop',
-                        // Expire Function
-                        async () => {
+                        stopFilter: message => message.content.toLowerCase() === 'stop',
+                        onExpire: async () => {
                             await channel.send(`Too slow! Try being more decisive next time.`);
                         },
-                        // Options
-                        { time: 10000, reset: true }
-                    );
+                        time: 10000,
+                        reset: true,
+                    });
 
                     if (favoriteColor === undefined) {
                         return;
