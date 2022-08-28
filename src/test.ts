@@ -65,11 +65,10 @@ async function start(): Promise<void> {
                         ],
                     });
 
-                    let result = await CollectorUtils.collectByButton(
-                        prompt,
-                        user,
-                        // Retrieve Result
-                        async buttonInteraction => {
+                    let result = await CollectorUtils.collectByButton({
+                        message: prompt,
+                        target: user,
+                        retriever: async buttonInteraction => {
                             switch (buttonInteraction.customId) {
                                 case 'watermelon':
                                     return { intr: buttonInteraction, value: 'Watermelon' };
@@ -81,15 +80,13 @@ async function start(): Promise<void> {
                                     return;
                             }
                         },
-                        // Stop Filter
-                        message => message.content.toLowerCase() === 'stop',
-                        // Expire Function
-                        async () => {
+                        stopFilter: message => message.content.toLowerCase() === 'stop',
+                        onExpire: async () => {
                             await channel.send('Too slow! Try being more decisive next time.');
                         },
-                        // Options
-                        { time: 10000, reset: true }
-                    );
+                        time: 10000,
+                        reset: true,
+                    });
 
                     if (result === undefined) {
                         return;

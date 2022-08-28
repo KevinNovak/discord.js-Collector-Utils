@@ -9,10 +9,6 @@ import {
     User,
 } from 'discord.js';
 
-export declare type ButtonRetriever<T> = (intr: ButtonInteraction) => Promise<{
-    intr: ButtonInteraction;
-    value: T;
-}>;
 export declare type SelectMenuRetriever<T> = (intr: SelectMenuInteraction) => Promise<{
     intr: SelectMenuInteraction;
     value: T;
@@ -37,22 +33,10 @@ export declare interface CollectOptions {
 export class CollectorUtils {
     /**
      * Collect a response by buttons.
-     * @param message Message to collect button interactions on.
-     * @param target Target user to collect from.
-     * @param retriever Method which takes a collected button interaction and returns a desired result, or `undefined` if invalid.
-     * @param stopFilter Method which takes message and returns a boolean as to whether the collector should be silently stopped.
-     * @param onExpire Method which is run if the timer expires.
-     * @param options Options to use for collecting.
+     * @param options Options for collection.
      * @returns A desired result, or `undefined` if the collector expired.
      */
-    public static async collectByButton<T>(
-        message: Message,
-        target: User,
-        retriever: ButtonRetriever<T>,
-        stopFilter: StopFilter,
-        onExpire: ExpireFunction,
-        options: CollectOptions = { time: 60000, reset: false }
-    ): Promise<
+    public static async collectByButton<T>(options: CollectByButtonOptions<T>): Promise<
         | {
               intr: ButtonInteraction;
               value: T;
@@ -60,16 +44,17 @@ export class CollectorUtils {
         | undefined
     > {
         return new Promise(async (resolve, reject) => {
-            let btnCollector = message.createMessageComponentCollector({
+            let btnCollector = options.message.createMessageComponentCollector({
                 componentType: 'BUTTON',
-                filter: intr => intr.user.id === target.id,
+                filter: intr => intr.user.id === options.target.id,
                 time: options.time,
             });
 
-            let stopCollector = message.channel.createMessageCollector(
+            let stopCollector = options.message.channel.createMessageCollector(
                 // Make sure message collector is ahead of reaction collector
                 {
-                    filter: message => message.author.id === target.id && stopFilter(message),
+                    filter: message =>
+                        message.author.id === options.target.id && options.stopFilter(message),
                     time: options.time + 1000,
                 }
             );
@@ -77,7 +62,7 @@ export class CollectorUtils {
             let expired = true;
 
             btnCollector.on('collect', async (intr: ButtonInteraction) => {
-                let result = await retriever(intr);
+                let result = await options.retriever(intr);
                 if (result === undefined) {
                     if (options.reset) {
                         btnCollector.resetTimer();
@@ -95,7 +80,7 @@ export class CollectorUtils {
             btnCollector.on('end', async collected => {
                 stopCollector.stop();
                 if (expired) {
-                    await onExpire();
+                    await options.onExpire();
                 }
             });
 
@@ -403,4 +388,38 @@ export class CollectorUtils {
             });
         });
     }
+}
+
+interface CollectByButtonOptions<T> {
+    /**
+     * Message to collect button interactions on.
+     */
+    message: Message;
+    /**
+     * Target user to collect from.
+     */
+    target: User;
+    /**
+     * Method which takes a collected button interaction and returns a desired result, or `undefined` if invalid.
+     */
+    retriever: (intr: ButtonInteraction) => Promise<{
+        intr: ButtonInteraction;
+        value: T;
+    }>;
+    /**
+     * Method which takes message and returns a boolean as to whether the collector should be silently stopped.
+     */
+    stopFilter: StopFilter;
+    /**
+     * Method which is run if the timer expires.
+     */
+    onExpire: ExpireFunction;
+    /**
+     * Time in milliseconds before the collector expires.
+     */
+    time: number;
+    /**
+     * Whether the collector time should be reset on a invalid response.
+     */
+    reset: boolean;
 }
