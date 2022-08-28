@@ -12,10 +12,19 @@ import {
 export class CollectorUtils {
     /**
      * Collect a response by buttons.
+     * @param message Message to collect button interactions on.
+     * @param retriever Method which takes a collected button interaction and returns a desired result, or `undefined` if invalid.
      * @param options Options for collection.
      * @returns A desired result, or `undefined` if the collector expired.
      */
-    public static async collectByButton<T>(options: CollectByButtonOptions<T>): Promise<
+    public static async collectByButton<T>(
+        message: Message,
+        retriever: (buttonInteraction: ButtonInteraction) => Promise<{
+            intr: ButtonInteraction;
+            value: T;
+        }>,
+        options: CollectOptions
+    ): Promise<
         | {
               intr: ButtonInteraction;
               value: T;
@@ -25,16 +34,16 @@ export class CollectorUtils {
         options = Object.assign(options, {
             time: 120000,
             reset: true,
-        } as CollectByButtonOptions<T>);
+        } as CollectOptions);
 
         return new Promise(async (resolve, reject) => {
-            let btnCollector = options.message.createMessageComponentCollector({
+            let btnCollector = message.createMessageComponentCollector({
                 componentType: 'BUTTON',
                 filter: intr => intr.user.id === options.target.id,
                 time: options.time,
             });
 
-            let stopCollector = options.message.channel.createMessageCollector(
+            let stopCollector = message.channel.createMessageCollector(
                 // Make sure message collector is ahead of reaction collector
                 {
                     filter: message =>
@@ -46,7 +55,7 @@ export class CollectorUtils {
             let expired = true;
 
             btnCollector.on('collect', async (intr: ButtonInteraction) => {
-                let result = await options.retriever(intr);
+                let result = await retriever(intr);
                 if (result === undefined) {
                     if (options.reset) {
                         btnCollector.resetTimer();
@@ -78,10 +87,19 @@ export class CollectorUtils {
 
     /**
      * Collect a response by select menu.
+     * @param message Message to collect select menu interactions on.
+     * @param retriever Method which takes a collected select menu interaction and returns a desired result, or `undefined` if invalid.
      * @param options Options for collection.
      * @returns A desired result, or `undefined` if the collector expired.
      */
-    public static async collectBySelectMenu<T>(options: CollectBySelectMenuOptions<T>): Promise<
+    public static async collectBySelectMenu<T>(
+        message: Message,
+        retriever: (selectMenuInteraction: SelectMenuInteraction) => Promise<{
+            intr: SelectMenuInteraction;
+            value: T;
+        }>,
+        options: CollectOptions
+    ): Promise<
         | {
               intr: SelectMenuInteraction;
               value: T;
@@ -91,16 +109,16 @@ export class CollectorUtils {
         options = Object.assign(options, {
             time: 120000,
             reset: true,
-        } as CollectBySelectMenuOptions<T>);
+        } as CollectOptions);
 
         return new Promise(async (resolve, reject) => {
-            let smCollector = options.message.createMessageComponentCollector({
+            let smCollector = message.createMessageComponentCollector({
                 componentType: 'SELECT_MENU',
                 filter: intr => intr.user.id === options.target.id,
                 time: options.time,
             });
 
-            let stopCollector = options.message.channel.createMessageCollector(
+            let stopCollector = message.channel.createMessageCollector(
                 // Make sure message collector is ahead of reaction collector
                 {
                     filter: message =>
@@ -112,7 +130,7 @@ export class CollectorUtils {
             let expired = true;
 
             smCollector.on('collect', async (intr: SelectMenuInteraction) => {
-                let result = await options.retriever(intr);
+                let result = await retriever(intr);
                 if (result === undefined) {
                     if (options.reset) {
                         smCollector.resetTimer();
@@ -144,10 +162,21 @@ export class CollectorUtils {
 
     /**
      * Collect a response through a modal.
+     * @param message Message to collect button interactions on.
+     * @param modal Modal to show when the button is clicked.
+     * @param retriever Method which takes a collected modal interaction and returns a desired result, or `undefined` if invalid.
      * @param options Options for collection.
      * @returns A desired result, or `undefined` if the collector expired.
      */
-    public static async collectByModal<T>(options: CollectByModalOptions<T>): Promise<
+    public static async collectByModal<T>(
+        message: Message,
+        modal: Modal,
+        retriever: (modalSubmitInteraction: ModalSubmitInteraction) => Promise<{
+            intr: ModalSubmitInteraction;
+            value: T;
+        }>,
+        options: CollectOptions
+    ): Promise<
         | {
               intr: ModalSubmitInteraction;
               value: T;
@@ -157,16 +186,16 @@ export class CollectorUtils {
         options = Object.assign(options, {
             time: 120000,
             reset: true,
-        } as CollectByModalOptions<T>);
+        } as CollectOptions);
 
         return new Promise(async (resolve, reject) => {
-            let btnCollector = options.message.createMessageComponentCollector({
+            let btnCollector = message.createMessageComponentCollector({
                 componentType: 'BUTTON',
                 filter: intr => intr.user.id === options.target.id,
                 time: options.time,
             });
 
-            let stopCollector = options.message.channel.createMessageCollector(
+            let stopCollector = message.channel.createMessageCollector(
                 // Make sure message collector is ahead of reaction collector
                 {
                     filter: message =>
@@ -178,8 +207,8 @@ export class CollectorUtils {
             let expired = true;
 
             btnCollector.on('collect', async (intr: ButtonInteraction) => {
-                options.modal.customId = `modal-${intr.id}`;
-                await intr.showModal(options.modal);
+                modal.customId = `modal-${intr.id}`;
+                await intr.showModal(modal);
 
                 let modalIntr: ModalSubmitInteraction;
                 try {
@@ -193,7 +222,7 @@ export class CollectorUtils {
                     return;
                 }
 
-                let result = await options.retriever(modalIntr);
+                let result = await retriever(modalIntr);
                 if (result === undefined) {
                     if (options.reset) {
                         btnCollector.resetTimer();
@@ -225,22 +254,28 @@ export class CollectorUtils {
 
     /**
      * Collect a response by reactions.
+     * @param message Message to collect reactions on.
+     * @param retriever Method which takes a collected reaction and returns a desired result, or `undefined` if invalid.
      * @param options Options for collection.
      * @returns A desired result, or `undefined` if the collector expired.
      */
-    public static async collectByReaction<T>(options: CollectByReactionOptions<T>): Promise<T> {
+    public static async collectByReaction<T>(
+        message: Message,
+        retriever: (messageReaction: MessageReaction, reactor: User) => Promise<T | undefined>,
+        options: CollectOptions
+    ): Promise<T> {
         options = Object.assign(options, {
             time: 120000,
             reset: true,
-        } as CollectByReactionOptions<T>);
+        } as CollectOptions);
 
         return new Promise(async (resolve, reject) => {
-            let reactCollector = options.message.createReactionCollector({
+            let reactCollector = message.createReactionCollector({
                 filter: (msgReaction, reactor) => reactor.id === options.target.id,
                 time: options.time,
             });
 
-            let stopCollector = options.message.channel.createMessageCollector(
+            let stopCollector = message.channel.createMessageCollector(
                 // Make sure message collector is ahead of reaction collector
                 {
                     filter: message =>
@@ -252,7 +287,7 @@ export class CollectorUtils {
             let expired = true;
 
             reactCollector.on('collect', async (msgReaction: MessageReaction, reactor: User) => {
-                let result = await options.retriever(msgReaction, reactor);
+                let result = await retriever(msgReaction, reactor);
                 if (result === undefined) {
                     if (options.reset) {
                         reactCollector.resetTimer();
@@ -284,22 +319,28 @@ export class CollectorUtils {
 
     /**
      * Collect a response by messages.
+     * @param channel Channel to collect messages on.
+     * @param retriever Method which takes a collected message and returns a desired result, or `undefined` if invalid.
      * @param options Options for collection.
      * @returns A desired result, or `undefined` if the collector expired.
      */
-    public static async collectByMessage<T>(options: CollectByMessageOptions<T>): Promise<T> {
+    public static async collectByMessage<T>(
+        channel: TextBasedChannel,
+        retriever: (message: Message) => Promise<T | undefined>,
+        options: CollectOptions
+    ): Promise<T> {
         options = Object.assign(options, {
             time: 120000,
             reset: true,
-        } as CollectByMessageOptions<T>);
+        } as CollectOptions);
 
         return new Promise(async (resolve, reject) => {
-            let msgCollector = options.channel.createMessageCollector({
+            let msgCollector = channel.createMessageCollector({
                 filter: message => message.author.id === options.target.id,
                 time: options.time,
             });
 
-            let stopCollector = options.channel.createMessageCollector(
+            let stopCollector = channel.createMessageCollector(
                 // Make sure message collector is ahead of reaction collector
                 {
                     filter: message =>
@@ -317,7 +358,7 @@ export class CollectorUtils {
                     return;
                 }
 
-                let result = await options.retriever(nextMsg);
+                let result = await retriever(nextMsg);
                 if (result === undefined) {
                     if (options.reset) {
                         msgCollector.resetTimer();
@@ -348,7 +389,7 @@ export class CollectorUtils {
     }
 }
 
-interface BaseCollectOptions {
+interface CollectOptions {
     /**
      * Target user to collect from.
      */
@@ -369,72 +410,4 @@ interface BaseCollectOptions {
      * Whether the collector time should be reset on a invalid response.
      */
     reset?: boolean;
-}
-
-interface CollectByButtonOptions<T> extends BaseCollectOptions {
-    /**
-     * Message to collect button interactions on.
-     */
-    message: Message;
-    /**
-     * Method which takes a collected button interaction and returns a desired result, or `undefined` if invalid.
-     */
-    retriever: (buttonInteraction: ButtonInteraction) => Promise<{
-        intr: ButtonInteraction;
-        value: T;
-    }>;
-}
-
-interface CollectBySelectMenuOptions<T> extends BaseCollectOptions {
-    /**
-     * Message to collect select menu interactions on.
-     */
-    message: Message;
-    /**
-     * Method which takes a collected select menu interaction and returns a desired result, or `undefined` if invalid.
-     */
-    retriever: (selectMenuInteraction: SelectMenuInteraction) => Promise<{
-        intr: SelectMenuInteraction;
-        value: T;
-    }>;
-}
-
-interface CollectByModalOptions<T> extends BaseCollectOptions {
-    /**
-     * Message to collect button interactions on.
-     */
-    message: Message;
-    /**
-     * The modal to show when the button is clicked.
-     */
-    modal: Modal;
-    /**
-     * Method which takes a collected modal interaction and returns a desired result, or `undefined` if invalid.
-     */
-    retriever: (modalSubmitInteraction: ModalSubmitInteraction) => Promise<{
-        intr: ModalSubmitInteraction;
-        value: T;
-    }>;
-}
-
-interface CollectByReactionOptions<T> extends BaseCollectOptions {
-    /**
-     * Message to collect reactions on.
-     */
-    message: Message;
-    /**
-     * Method which takes a collected reaction and returns a desired result, or `undefined` if invalid.
-     */
-    retriever: (messageReaction: MessageReaction, reactor: User) => Promise<T | undefined>;
-}
-
-interface CollectByMessageOptions<T> extends BaseCollectOptions {
-    /**
-     * Channel to collect messages on.
-     */
-    channel: TextBasedChannel;
-    /**
-     * Method which takes a collected message and returns a desired result, or `undefined` if invalid.
-     */
-    retriever: (message: Message) => Promise<T | undefined>;
 }
