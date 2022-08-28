@@ -379,7 +379,7 @@ interface CollectByButtonOptions<T> extends BaseCollectOptions {
     /**
      * Method which takes a collected button interaction and returns a desired result, or `undefined` if invalid.
      */
-    retriever: (intr: ButtonInteraction) => Promise<{
+    retriever: (buttonInteraction: ButtonInteraction) => Promise<{
         intr: ButtonInteraction;
         value: T;
     }>;
@@ -393,7 +393,7 @@ interface CollectBySelectMenuOptions<T> extends BaseCollectOptions {
     /**
      * Method which takes a collected select menu interaction and returns a desired result, or `undefined` if invalid.
      */
-    retriever: (intr: SelectMenuInteraction) => Promise<{
+    retriever: (selectMenuInteraction: SelectMenuInteraction) => Promise<{
         intr: SelectMenuInteraction;
         value: T;
     }>;
@@ -411,7 +411,7 @@ interface CollectByModalOptions<T> extends BaseCollectOptions {
     /**
      * Method which takes a collected modal interaction and returns a desired result, or `undefined` if invalid.
      */
-    retriever: (intr: ModalSubmitInteraction) => Promise<{
+    retriever: (modalSubmitInteraction: ModalSubmitInteraction) => Promise<{
         intr: ModalSubmitInteraction;
         value: T;
     }>;
@@ -425,7 +425,7 @@ interface CollectByReactionOptions<T> extends BaseCollectOptions {
     /**
      * Method which takes a collected reaction and returns a desired result, or `undefined` if invalid.
      */
-    retriever: (msgReaction: MessageReaction, reactor: User) => Promise<T | undefined>;
+    retriever: (messageReaction: MessageReaction, reactor: User) => Promise<T | undefined>;
 }
 
 interface CollectByMessageOptions<T> extends BaseCollectOptions {
@@ -436,5 +436,5 @@ interface CollectByMessageOptions<T> extends BaseCollectOptions {
     /**
      * Method which takes a collected message and returns a desired result, or `undefined` if invalid.
      */
-    retriever: (nextMsg: Message) => Promise<T | undefined>;
+    retriever: (message: Message) => Promise<T | undefined>;
 }
