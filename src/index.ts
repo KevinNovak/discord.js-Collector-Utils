@@ -19,10 +19,7 @@ export class CollectorUtils {
      */
     public static async collectByButton<T>(
         message: Message,
-        retriever: (buttonInteraction: ButtonInteraction) => Promise<{
-            intr: ButtonInteraction;
-            value: T;
-        }>,
+        retriever: ButtonRetriever<T>,
         options: CollectOptions = {}
     ): Promise<
         | {
@@ -115,10 +112,7 @@ export class CollectorUtils {
      */
     public static async collectBySelectMenu<T>(
         message: Message,
-        retriever: (selectMenuInteraction: SelectMenuInteraction) => Promise<{
-            intr: SelectMenuInteraction;
-            value: T;
-        }>,
+        retriever: SelectMenuRetriever<T>,
         options: CollectOptions = {}
     ): Promise<
         | {
@@ -213,10 +207,7 @@ export class CollectorUtils {
     public static async collectByModal<T>(
         message: Message,
         modal: Modal,
-        retriever: (modalSubmitInteraction: ModalSubmitInteraction) => Promise<{
-            intr: ModalSubmitInteraction;
-            value: T;
-        }>,
+        retriever: ModalRetriever<T>,
         options: CollectOptions = {}
     ): Promise<
         | {
@@ -324,9 +315,9 @@ export class CollectorUtils {
      */
     public static async collectByReaction<T>(
         message: Message,
-        retriever: (messageReaction: MessageReaction, reactor: User) => Promise<T | undefined>,
+        retriever: ReactionRetriever<T>,
         options: CollectOptions = {}
-    ): Promise<T> {
+    ): Promise<T | undefined> {
         options = Object.assign(
             {
                 time: 120000,
@@ -410,9 +401,9 @@ export class CollectorUtils {
      */
     public static async collectByMessage<T>(
         channel: TextBasedChannel,
-        retriever: (message: Message) => Promise<T | undefined>,
+        retriever: MessageRetriever<T>,
         options: CollectOptions = {}
-    ): Promise<T> {
+    ): Promise<T | undefined> {
         options = Object.assign(
             {
                 time: 120000,
@@ -494,7 +485,7 @@ export class CollectorUtils {
     }
 }
 
-interface CollectOptions {
+export interface CollectOptions {
     /**
      * Time in milliseconds before the collector expires.
      * @defaultValue `120000` (2 minutes)
@@ -512,9 +503,38 @@ interface CollectOptions {
     /**
      * Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      */
-    stopFilter?: (message: Message) => boolean;
+    stopFilter?: StopFilter;
     /**
      * Method which is run if the timer expires.
      */
-    onExpire?: () => void | Promise<void>;
+    onExpire?: ExpireFunction;
 }
+export type StopFilter = (message: Message) => boolean;
+export type ExpireFunction = () => void | Promise<void>;
+
+export type ButtonRetriever<T> = (buttonInteraction: ButtonInteraction) => Promise<
+    | {
+          intr: ButtonInteraction;
+          value: T;
+      }
+    | undefined
+>;
+export type SelectMenuRetriever<T> = (selectMenuInteraction: SelectMenuInteraction) => Promise<
+    | {
+          intr: SelectMenuInteraction;
+          value: T;
+      }
+    | undefined
+>;
+export type ModalRetriever<T> = (modalSubmitInteraction: ModalSubmitInteraction) => Promise<
+    | {
+          intr: ModalSubmitInteraction;
+          value: T;
+      }
+    | undefined
+>;
+export type ReactionRetriever<T> = (
+    msgReaction: MessageReaction,
+    reactor: User
+) => Promise<T | undefined>;
+export type MessageRetriever<T> = (message: Message) => Promise<T | undefined>;
