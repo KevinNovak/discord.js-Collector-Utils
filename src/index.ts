@@ -534,7 +534,7 @@ export type ModalRetriever<T> = (modalSubmitInteraction: ModalSubmitInteraction)
     | undefined
 >;
 export type ReactionRetriever<T> = (
-    msgReaction: MessageReaction,
+    messageReaction: MessageReaction,
     reactor: User
 ) => Promise<T | undefined>;
 export type MessageRetriever<T> = (message: Message) => Promise<T | undefined>;
