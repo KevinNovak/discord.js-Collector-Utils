@@ -64,10 +64,6 @@ let prompt = await channel.send({
 
 let result = await CollectorUtils.collectByButton(
     prompt,
-    // Collect Filter
-    buttonInteraction => buttonInteraction.user.id === user.id,
-    // Stop Filter
-    message => message.author.id === user.id && message.content.toLowerCase() === 'stop',
     // Retrieve Result
     async buttonInteraction => {
         switch (buttonInteraction.customId) {
@@ -81,12 +77,16 @@ let result = await CollectorUtils.collectByButton(
                 return;
         }
     },
-    // Expire Function
-    async () => {
-        await channel.send('Too slow! Try being more decisive next time.');
-    },
     // Options
-    { time: 10000, reset: true }
+    {
+        time: 10000,
+        reset: true,
+        target: user,
+        stopFilter: message => message.content.toLowerCase() === 'stop',
+        onExpire: async () => {
+            await channel.send('Too slow! Try being more decisive next time.');
+        },
+    }
 );
 
 if (result === undefined) {
@@ -135,10 +135,6 @@ let prompt = await channel.send({
 
 let result = await CollectorUtils.collectBySelectMenu(
     prompt,
-    // Collect Filter
-    selectMenuInteraction => selectMenuInteraction.user.id === user.id,
-    // Stop Filter
-    message => message.author.id === user.id && message.content.toLowerCase() === 'stop',
     // Retrieve Result
     async selectMenuInteraction => {
         return {
@@ -146,12 +142,16 @@ let result = await CollectorUtils.collectBySelectMenu(
             value: selectMenuInteraction.values[0],
         };
     },
-    // Expire Function
-    async () => {
-        await channel.send('Too slow! Try being more decisive next time.');
-    },
     // Options
-    { time: 10000, reset: true }
+    {
+        time: 10000,
+        reset: true,
+        target: user,
+        stopFilter: message => message.content.toLowerCase() === 'stop',
+        onExpire: async () => {
+            await channel.send('Too slow! Try being more decisive next time.');
+        },
+    }
 );
 
 if (result === undefined) {
@@ -204,10 +204,6 @@ let result = await CollectorUtils.collectByModal(
             },
         ],
     }),
-    // Collect Filter
-    buttonInteraction => buttonInteraction.user.id === user.id,
-    // Stop Filter
-    message => message.author.id === user.id && message.content.toLowerCase() === 'stop',
     // Retrieve Result
     async buttonInteraction => {
         let textInput = buttonInteraction.components[0].components[0];
@@ -219,12 +215,16 @@ let result = await CollectorUtils.collectByModal(
 
         return { intr: buttonInteraction, value: textInput.value };
     },
-    // Expire Function
-    async () => {
-        await channel.send('Too slow! Try being more decisive next time.');
-    },
     // Options
-    { time: 10000, reset: true }
+    {
+        time: 10000,
+        reset: true,
+        target: user,
+        stopFilter: message => message.content.toLowerCase() === 'stop',
+        onExpire: async () => {
+            await channel.send('Too slow! Try being more decisive next time.');
+        },
+    }
 );
 
 if (result === undefined) {
@@ -247,10 +247,6 @@ prompt.react('🍌');
 
 let favoriteFruit = await CollectorUtils.collectByReaction(
     prompt,
-    // Collect Filter
-    (messageReaction, reactor) => reactor.id === user.id,
-    // Stop Filter
-    message => message.author.id === user.id && message.content.toLowerCase() === 'stop',
     // Retrieve Result
     async (messageReaction, user) => {
         switch (messageReaction.emoji.name) {
@@ -264,12 +260,16 @@ let favoriteFruit = await CollectorUtils.collectByReaction(
                 return;
         }
     },
-    // Expire Function
-    async () => {
-        await channel.send('Too slow! Try being more decisive next time.');
-    },
     // Options
-    { time: 10000, reset: true }
+    {
+        time: 10000,
+        reset: true,
+        target: user,
+        stopFilter: message => message.content.toLowerCase() === 'stop',
+        onExpire: async () => {
+            await channel.send('Too slow! Try being more decisive next time.');
+        },
+    }
 );
 
 if (favoriteFruit === undefined) {
@@ -288,10 +288,6 @@ await channel.send('What is your favorite color?');
 
 let favoriteColor = await CollectorUtils.collectByMessage(
     channel,
-    // Collect Filter
-    message => message.author.id === user.id,
-    // Stop Filter
-    message => message.author.id === user.id && message.content.toLowerCase() === 'stop',
     // Retrieve Result
     async message => {
         let colorOptions = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
@@ -312,12 +308,16 @@ let favoriteColor = await CollectorUtils.collectByMessage(
 
         return favoriteColor;
     },
-    // Expire Function
-    async () => {
-        await channel.send(`Too slow! Try being more decisive next time.`);
-    },
     // Options
-    { time: 10000, reset: true }
+    {
+        time: 10000,
+        reset: true,
+        target: user,
+        stopFilter: message => message.content.toLowerCase() === 'stop',
+        onExpire: async () => {
+            await channel.send(`Too slow! Try being more decisive next time.`);
+        },
+    }
 );
 
 if (favoriteColor === undefined) {
