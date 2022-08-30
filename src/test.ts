@@ -202,17 +202,17 @@ async function start(): Promise<void> {
                             ],
                         }),
                         // Retrieve Result
-                        async buttonInteraction => {
-                            let textInput = buttonInteraction.components[0].components[0];
+                        async modalSubmitInteraction => {
+                            let textInput = modalSubmitInteraction.components[0].components[0];
 
                             if (textInput.value.toLowerCase().includes('fight club')) {
-                                await buttonInteraction.reply(
+                                await modalSubmitInteraction.reply(
                                     `We don't talk about fight club. Try again.`
                                 );
                                 return;
                             }
 
-                            return { intr: buttonInteraction, value: textInput.value };
+                            return { intr: modalSubmitInteraction, value: textInput.value };
                         },
                         // Options
                         {
