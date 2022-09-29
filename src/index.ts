@@ -2,7 +2,7 @@ import {
     ButtonInteraction,
     Message,
     MessageReaction,
-    Modal,
+    ModalBuilder,
     ModalSubmitInteraction,
     SelectMenuInteraction,
     TextBasedChannel,
@@ -206,7 +206,7 @@ export class CollectorUtils {
      */
     public static async collectByModal<T>(
         message: Message,
-        modal: Modal,
+        modal: ModalBuilder,
         retriever: ModalRetriever<T>,
         options: CollectOptions = {}
     ): Promise<

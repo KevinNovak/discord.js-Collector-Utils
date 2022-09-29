@@ -1,4 +1,4 @@
-import { Client, Intents, Modal } from 'discord.js';
+import { Client, Intents, ModalBuilder } from 'discord.js';
 import { CollectorUtils } from '.';
 
 let Config = require('../config/config.json');
@@ -183,7 +183,7 @@ async function start(): Promise<void> {
 
                     let result = await CollectorUtils.collectByModal(
                         prompt,
-                        new Modal({
+                        new ModalBuilder({
                             customId: 'modal', // Will be overwritten
                             title: client.user.username,
                             components: [
