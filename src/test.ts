@@ -2,6 +2,7 @@ import {
     ButtonStyle,
     Client,
     ComponentType,
+    Events,
     IntentsBitField,
     ModalBuilder,
     TextInputStyle,
@@ -16,14 +17,15 @@ async function start(): Promise<void> {
             IntentsBitField.Flags.Guilds,
             IntentsBitField.Flags.GuildMessages,
             IntentsBitField.Flags.GuildMessageReactions,
+            IntentsBitField.Flags.MessageContent,
         ],
     });
 
-    client.on('ready', () => {
+    client.on(Events.ClientReady, () => {
         console.log(`Logged in as '${client.user.tag}'!`);
     });
 
-    client.on('messageCreate', async event => {
+    client.on(Events.MessageCreate, async event => {
         try {
             let client = event.client;
             let channel = event.channel;
