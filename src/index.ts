@@ -1,8 +1,9 @@
 import {
     ButtonInteraction,
+    ComponentType,
     Message,
     MessageReaction,
-    Modal,
+    ModalBuilder,
     ModalSubmitInteraction,
     SelectMenuInteraction,
     TextBasedChannel,
@@ -38,7 +39,7 @@ export class CollectorUtils {
 
         return new Promise(async (resolve, reject) => {
             let btnCollector = message.createMessageComponentCollector({
-                componentType: 'BUTTON',
+                componentType: ComponentType.Button,
                 filter: intr => {
                     if (options.target) {
                         return intr.user.id === options.target.id;
@@ -131,7 +132,7 @@ export class CollectorUtils {
 
         return new Promise(async (resolve, reject) => {
             let smCollector = message.createMessageComponentCollector({
-                componentType: 'SELECT_MENU',
+                componentType: ComponentType.SelectMenu,
                 filter: intr => {
                     if (options.target) {
                         return intr.user.id === options.target.id;
@@ -206,7 +207,7 @@ export class CollectorUtils {
      */
     public static async collectByModal<T>(
         message: Message,
-        modal: Modal,
+        modal: ModalBuilder,
         retriever: ModalRetriever<T>,
         options: CollectOptions = {}
     ): Promise<
@@ -226,7 +227,7 @@ export class CollectorUtils {
 
         return new Promise(async (resolve, reject) => {
             let btnCollector = message.createMessageComponentCollector({
-                componentType: 'BUTTON',
+                componentType: ComponentType.Button,
                 filter: intr => {
                     if (options.target) {
                         return intr.user.id === options.target.id;
@@ -261,7 +262,7 @@ export class CollectorUtils {
             let expired = true;
 
             btnCollector.on('collect', async (intr: ButtonInteraction) => {
-                modal.customId = `modal-${intr.id}`;
+                modal.setCustomId(`modal-${intr.id}`);
                 await intr.showModal(modal);
 
                 let modalIntr: ModalSubmitInteraction;
