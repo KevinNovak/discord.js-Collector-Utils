@@ -6,7 +6,7 @@
     "license": "MIT",
     "private": false,
     "engines": {
-        "node": ">=12.0.0"
+        "node": ">=16.9.0"
     },
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
