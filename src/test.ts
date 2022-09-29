@@ -1,4 +1,11 @@
-import { Client, Intents, ModalBuilder } from 'discord.js';
+import {
+    ButtonStyle,
+    Client,
+    ComponentType,
+    IntentsBitField,
+    ModalBuilder,
+    TextInputStyle,
+} from 'discord.js';
 import { CollectorUtils } from '.';
 
 let Config = require('../config/config.json');
@@ -6,9 +13,9 @@ let Config = require('../config/config.json');
 async function start(): Promise<void> {
     let client = new Client({
         intents: [
-            Intents.FLAGS.GUILDS,
-            Intents.FLAGS.GUILD_MESSAGES,
-            Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+            IntentsBitField.Flags.Guilds,
+            IntentsBitField.Flags.GuildMessages,
+            IntentsBitField.Flags.GuildMessageReactions,
         ],
     });
 
@@ -40,25 +47,25 @@ async function start(): Promise<void> {
                         content: 'Please select your favorite fruit!',
                         components: [
                             {
-                                type: 'ACTION_ROW',
+                                type: ComponentType.ActionRow,
                                 components: [
                                     {
-                                        type: 'BUTTON',
+                                        type: ComponentType.Button,
                                         customId: 'watermelon',
                                         emoji: '🍉',
-                                        style: 'PRIMARY',
+                                        style: ButtonStyle.Primary,
                                     },
                                     {
-                                        type: 'BUTTON',
+                                        type: ComponentType.Button,
                                         customId: 'apple',
                                         emoji: '🍎',
-                                        style: 'PRIMARY',
+                                        style: ButtonStyle.Primary,
                                     },
                                     {
-                                        type: 'BUTTON',
+                                        type: ComponentType.Button,
                                         customId: 'banana',
                                         emoji: '🍌',
-                                        style: 'PRIMARY',
+                                        style: ButtonStyle.Primary,
                                     },
                                 ],
                             },
@@ -105,10 +112,10 @@ async function start(): Promise<void> {
                         content: 'Please select your favorite fruit!',
                         components: [
                             {
-                                type: 'ACTION_ROW',
+                                type: ComponentType.ActionRow,
                                 components: [
                                     {
-                                        type: 'SELECT_MENU',
+                                        type: ComponentType.SelectMenu,
                                         customId: 'select_menu',
                                         options: [
                                             {
@@ -167,14 +174,14 @@ async function start(): Promise<void> {
                         content: 'What is your favorite movie?',
                         components: [
                             {
-                                type: 'ACTION_ROW',
+                                type: ComponentType.ActionRow,
                                 components: [
                                     {
-                                        type: 'BUTTON',
+                                        type: ComponentType.Button,
                                         customId: 'enter_response',
                                         emoji: '⌨️',
                                         label: 'Enter Response',
-                                        style: 'PRIMARY',
+                                        style: ButtonStyle.Primary,
                                     },
                                 ],
                             },
@@ -188,14 +195,14 @@ async function start(): Promise<void> {
                             title: client.user.username,
                             components: [
                                 {
-                                    type: 'ACTION_ROW',
+                                    type: ComponentType.ActionRow,
                                     components: [
                                         {
-                                            type: 'TEXT_INPUT',
+                                            type: ComponentType.TextInput,
                                             customId: 'favorite_movie',
                                             label: 'Favorite Movie',
                                             required: true,
-                                            style: 'SHORT',
+                                            style: TextInputStyle.Short,
                                         },
                                     ],
                                 },
@@ -204,6 +211,9 @@ async function start(): Promise<void> {
                         // Retrieve Result
                         async modalSubmitInteraction => {
                             let textInput = modalSubmitInteraction.components[0].components[0];
+                            if (textInput.type !== ComponentType.TextInput) {
+                                return;
+                            }
 
                             if (textInput.value.toLowerCase().includes('fight club')) {
                                 await modalSubmitInteraction.reply(
