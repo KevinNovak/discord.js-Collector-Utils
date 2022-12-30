@@ -1,4 +1,5 @@
 import {
+    BaseInteraction,
     ButtonInteraction,
     ComponentType,
     Message,
@@ -18,14 +19,14 @@ export class CollectorUtils {
      * @param options Options for collection.
      * @returns A desired result, or `undefined` if the collector expired.
      */
-    public static async collectByButton<T>(
+    public static async collectByButton<T1, T2 extends BaseInteraction>(
         message: Message,
-        retriever: ButtonRetriever<T>,
+        retriever: ButtonRetriever<T1, T2>,
         options: CollectOptions = {}
     ): Promise<
         | {
-              intr: ButtonInteraction;
-              value: T;
+              intr: T2;
+              value: T1;
           }
         | undefined
     > {
@@ -111,14 +112,14 @@ export class CollectorUtils {
      * @param options Options for collection.
      * @returns A desired result, or `undefined` if the collector expired.
      */
-    public static async collectBySelectMenu<T>(
+    public static async collectBySelectMenu<T1, T2 extends BaseInteraction>(
         message: Message,
-        retriever: SelectMenuRetriever<T>,
+        retriever: SelectMenuRetriever<T1, T2>,
         options: CollectOptions = {}
     ): Promise<
         | {
-              intr: SelectMenuInteraction;
-              value: T;
+              intr: T2;
+              value: T1;
           }
         | undefined
     > {
@@ -205,15 +206,15 @@ export class CollectorUtils {
      * @param options Options for collection.
      * @returns A desired result, or `undefined` if the collector expired.
      */
-    public static async collectByModal<T>(
+    public static async collectByModal<T1, T2 extends BaseInteraction>(
         message: Message,
         modal: ModalBuilder,
-        retriever: ModalRetriever<T>,
+        retriever: ModalRetriever<T1, T2>,
         options: CollectOptions = {}
     ): Promise<
         | {
-              intr: ModalSubmitInteraction;
-              value: T;
+              intr: T2;
+              value: T1;
           }
         | undefined
     > {
@@ -513,24 +514,30 @@ export interface CollectOptions {
 export type StopFilter = (message: Message) => boolean;
 export type ExpireFunction = () => void | Promise<void>;
 
-export type ButtonRetriever<T> = (buttonInteraction: ButtonInteraction) => Promise<
+export type ButtonRetriever<T1, T2 extends BaseInteraction> = (
+    buttonInteraction: ButtonInteraction
+) => Promise<
     | {
-          intr: ButtonInteraction;
-          value: T;
+          intr: T2;
+          value: T1;
       }
     | undefined
 >;
-export type SelectMenuRetriever<T> = (selectMenuInteraction: SelectMenuInteraction) => Promise<
+export type SelectMenuRetriever<T1, T2 extends BaseInteraction> = (
+    selectMenuInteraction: SelectMenuInteraction
+) => Promise<
     | {
-          intr: SelectMenuInteraction;
-          value: T;
+          intr: T2;
+          value: T1;
       }
     | undefined
 >;
-export type ModalRetriever<T> = (modalSubmitInteraction: ModalSubmitInteraction) => Promise<
+export type ModalRetriever<T1, T2 extends BaseInteraction> = (
+    modalSubmitInteraction: ModalSubmitInteraction
+) => Promise<
     | {
-          intr: ModalSubmitInteraction;
-          value: T;
+          intr: T2;
+          value: T1;
       }
     | undefined
 >;
