@@ -1,13 +1,16 @@
 import {
     ButtonInteraction,
+    ChannelSelectMenuInteraction,
     ComponentType,
     Message,
     MessageReaction,
     ModalBuilder,
     ModalSubmitInteraction,
-    SelectMenuInteraction,
+    RoleSelectMenuInteraction,
+    StringSelectMenuInteraction,
     TextBasedChannel,
     User,
+    UserSelectMenuInteraction,
 } from 'discord.js';
 
 export class CollectorUtils {
@@ -24,9 +27,9 @@ export class CollectorUtils {
         options: CollectOptions = {}
     ): Promise<
         | {
-              intr: ButtonInteraction;
-              value: T;
-          }
+            intr: ButtonInteraction;
+            value: T;
+        }
         | undefined
     > {
         options = Object.assign(
@@ -105,21 +108,21 @@ export class CollectorUtils {
     }
 
     /**
-     * Collect a response by select menu.
+     * Collect a response by string select menu.
      * @param message Message to collect select menu interactions on.
      * @param retriever Method which takes a collected select menu interaction and returns a desired result, or `undefined` if invalid.
      * @param options Options for collection.
      * @returns A desired result, or `undefined` if the collector expired.
      */
-    public static async collectBySelectMenu<T>(
+    public static async collectByStringSelectMenu<T>(
         message: Message,
-        retriever: SelectMenuRetriever<T>,
+        retriever: StringSelectMenuRetriever<T>,
         options: CollectOptions = {}
     ): Promise<
         | {
-              intr: SelectMenuInteraction;
-              value: T;
-          }
+            intr: StringSelectMenuInteraction;
+            value: T;
+        }
         | undefined
     > {
         options = Object.assign(
@@ -132,7 +135,7 @@ export class CollectorUtils {
 
         return new Promise(async (resolve, reject) => {
             let smCollector = message.createMessageComponentCollector({
-                componentType: ComponentType.SelectMenu,
+                componentType: ComponentType.StringSelect,
                 filter: intr => {
                     if (options.target) {
                         return intr.user.id === options.target.id;
@@ -166,7 +169,287 @@ export class CollectorUtils {
 
             let expired = true;
 
-            smCollector.on('collect', async (intr: SelectMenuInteraction) => {
+            smCollector.on('collect', async (intr: StringSelectMenuInteraction) => {
+                let result = await retriever(intr);
+                if (result === undefined) {
+                    if (options.reset) {
+                        smCollector.resetTimer();
+                        stopCollector.resetTimer();
+                    }
+                    return;
+                } else {
+                    expired = false;
+                    smCollector.stop();
+                    resolve(result);
+                    return;
+                }
+            });
+
+            smCollector.on('end', async collected => {
+                stopCollector.stop();
+                if (expired && options.onExpire) {
+                    await options.onExpire();
+                }
+            });
+
+            stopCollector.on('collect', async (nextMsg: Message) => {
+                expired = false;
+                smCollector.stop();
+                resolve(undefined);
+            });
+        });
+    }
+
+    /**
+     * Collect a response by user select menu.
+     * @param message Message to collect select menu interactions on.
+     * @param retriever Method which takes a collected select menu interaction and returns a desired result, or `undefined` if invalid.
+     * @param options Options for collection.
+     * @returns A desired result, or `undefined` if the collector expired.
+     */
+    public static async collectByUserSelectMenu<T>(
+        message: Message,
+        retriever: UserSelectMenuRetriever<T>,
+        options: CollectOptions = {}
+    ): Promise<
+        | {
+            intr: UserSelectMenuInteraction;
+            value: T;
+        }
+        | undefined
+    > {
+        options = Object.assign(
+            {
+                time: 120000,
+                reset: true,
+            } as CollectOptions,
+            options
+        );
+
+        return new Promise(async (resolve, reject) => {
+            let smCollector = message.createMessageComponentCollector({
+                componentType: ComponentType.UserSelect,
+                filter: intr => {
+                    if (options.target) {
+                        return intr.user.id === options.target.id;
+                    }
+
+                    return true;
+                },
+                time: options.time,
+            });
+
+            let stopCollector = message.channel.createMessageCollector({
+                filter: message => {
+                    if (!options.stopFilter) {
+                        return false;
+                    }
+
+                    let stop = options.stopFilter(message);
+                    if (!stop) {
+                        return false;
+                    }
+
+                    if (options.target) {
+                        return message.author.id === options.target.id;
+                    }
+
+                    return true;
+                },
+                // Make sure message collector is ahead of reaction collector
+                time: options.time + 1000,
+            });
+
+            let expired = true;
+
+            smCollector.on('collect', async (intr: UserSelectMenuInteraction) => {
+                let result = await retriever(intr);
+                if (result === undefined) {
+                    if (options.reset) {
+                        smCollector.resetTimer();
+                        stopCollector.resetTimer();
+                    }
+                    return;
+                } else {
+                    expired = false;
+                    smCollector.stop();
+                    resolve(result);
+                    return;
+                }
+            });
+
+            smCollector.on('end', async collected => {
+                stopCollector.stop();
+                if (expired && options.onExpire) {
+                    await options.onExpire();
+                }
+            });
+
+            stopCollector.on('collect', async (nextMsg: Message) => {
+                expired = false;
+                smCollector.stop();
+                resolve(undefined);
+            });
+        });
+    }
+
+    /**
+     * Collect a response by role select menu.
+     * @param message Message to collect select menu interactions on.
+     * @param retriever Method which takes a collected select menu interaction and returns a desired result, or `undefined` if invalid.
+     * @param options Options for collection.
+     * @returns A desired result, or `undefined` if the collector expired.
+     */
+    public static async collectByRoleSelectMenu<T>(
+        message: Message,
+        retriever: RoleSelectMenuRetriever<T>,
+        options: CollectOptions = {}
+    ): Promise<
+        | {
+            intr: RoleSelectMenuInteraction;
+            value: T;
+        }
+        | undefined
+    > {
+        options = Object.assign(
+            {
+                time: 120000,
+                reset: true,
+            } as CollectOptions,
+            options
+        );
+
+        return new Promise(async (resolve, reject) => {
+            let smCollector = message.createMessageComponentCollector({
+                componentType: ComponentType.RoleSelect,
+                filter: intr => {
+                    if (options.target) {
+                        return intr.user.id === options.target.id;
+                    }
+
+                    return true;
+                },
+                time: options.time,
+            });
+
+            let stopCollector = message.channel.createMessageCollector({
+                filter: message => {
+                    if (!options.stopFilter) {
+                        return false;
+                    }
+
+                    let stop = options.stopFilter(message);
+                    if (!stop) {
+                        return false;
+                    }
+
+                    if (options.target) {
+                        return message.author.id === options.target.id;
+                    }
+
+                    return true;
+                },
+                // Make sure message collector is ahead of reaction collector
+                time: options.time + 1000,
+            });
+
+            let expired = true;
+
+            smCollector.on('collect', async (intr: RoleSelectMenuInteraction) => {
+                let result = await retriever(intr);
+                if (result === undefined) {
+                    if (options.reset) {
+                        smCollector.resetTimer();
+                        stopCollector.resetTimer();
+                    }
+                    return;
+                } else {
+                    expired = false;
+                    smCollector.stop();
+                    resolve(result);
+                    return;
+                }
+            });
+
+            smCollector.on('end', async collected => {
+                stopCollector.stop();
+                if (expired && options.onExpire) {
+                    await options.onExpire();
+                }
+            });
+
+            stopCollector.on('collect', async (nextMsg: Message) => {
+                expired = false;
+                smCollector.stop();
+                resolve(undefined);
+            });
+        });
+    }
+
+
+    /**
+ * Collect a response by channel select menu.
+ * @param message Message to collect select menu interactions on.
+ * @param retriever Method which takes a collected select menu interaction and returns a desired result, or `undefined` if invalid.
+ * @param options Options for collection.
+ * @returns A desired result, or `undefined` if the collector expired.
+ */
+    public static async collectByChannelSelectMenu<T>(
+        message: Message,
+        retriever: ChannelSelectMenuRetriever<T>,
+        options: CollectOptions = {}
+    ): Promise<
+        | {
+            intr: ChannelSelectMenuInteraction;
+            value: T;
+        }
+        | undefined
+    > {
+        options = Object.assign(
+            {
+                time: 120000,
+                reset: true,
+            } as CollectOptions,
+            options
+        );
+
+        return new Promise(async (resolve, reject) => {
+            let smCollector = message.createMessageComponentCollector({
+                componentType: ComponentType.ChannelSelect,
+                filter: intr => {
+                    if (options.target) {
+                        return intr.user.id === options.target.id;
+                    }
+
+                    return true;
+                },
+                time: options.time,
+            });
+
+            let stopCollector = message.channel.createMessageCollector({
+                filter: message => {
+                    if (!options.stopFilter) {
+                        return false;
+                    }
+
+                    let stop = options.stopFilter(message);
+                    if (!stop) {
+                        return false;
+                    }
+
+                    if (options.target) {
+                        return message.author.id === options.target.id;
+                    }
+
+                    return true;
+                },
+                // Make sure message collector is ahead of reaction collector
+                time: options.time + 1000,
+            });
+
+            let expired = true;
+
+            smCollector.on('collect', async (intr: ChannelSelectMenuInteraction) => {
                 let result = await retriever(intr);
                 if (result === undefined) {
                     if (options.reset) {
@@ -212,9 +495,9 @@ export class CollectorUtils {
         options: CollectOptions = {}
     ): Promise<
         | {
-              intr: ModalSubmitInteraction;
-              value: T;
-          }
+            intr: ModalSubmitInteraction;
+            value: T;
+        }
         | undefined
     > {
         options = Object.assign(
@@ -515,23 +798,49 @@ export type ExpireFunction = () => void | Promise<void>;
 
 export type ButtonRetriever<T> = (buttonInteraction: ButtonInteraction) => Promise<
     | {
-          intr: ButtonInteraction;
-          value: T;
-      }
+        intr: ButtonInteraction;
+        value: T;
+    }
     | undefined
 >;
-export type SelectMenuRetriever<T> = (selectMenuInteraction: SelectMenuInteraction) => Promise<
+// String
+export type StringSelectMenuRetriever<T> = (selectMenuInteraction: StringSelectMenuInteraction) => Promise<
     | {
-          intr: SelectMenuInteraction;
-          value: T;
-      }
+        intr: StringSelectMenuInteraction;
+        value: T;
+    }
     | undefined
 >;
+// User
+export type UserSelectMenuRetriever<T> = (selectMenuInteraction: UserSelectMenuInteraction) => Promise<
+    | {
+        intr: UserSelectMenuInteraction;
+        value: T;
+    }
+    | undefined
+>;
+// Role
+export type RoleSelectMenuRetriever<T> = (selectMenuInteraction: RoleSelectMenuInteraction) => Promise<
+    | {
+        intr: RoleSelectMenuInteraction;
+        value: T;
+    }
+    | undefined
+>;
+// Channel
+export type ChannelSelectMenuRetriever<T> = (selectMenuInteraction: ChannelSelectMenuInteraction) => Promise<
+    | {
+        intr: ChannelSelectMenuInteraction;
+        value: T;
+    }
+    | undefined
+>;
+
 export type ModalRetriever<T> = (modalSubmitInteraction: ModalSubmitInteraction) => Promise<
     | {
-          intr: ModalSubmitInteraction;
-          value: T;
-      }
+        intr: ModalSubmitInteraction;
+        value: T;
+    }
     | undefined
 >;
 export type ReactionRetriever<T> = (
