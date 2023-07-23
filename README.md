@@ -11,7 +11,10 @@
 -   [Installation](#installation)
 -   [Importing](#importing)
 -   [`collectByButton` Example](#collectbybutton-example)
--   [`collectBySelectMenu` Example](#collectbyselectmenu-example)
+-   [`collectByStringSelectMenu` Example](#collectbystringselectmenu-example)
+-   [`collectByUserSelectMenu` Example](#collectbyuserselectmenu-example)
+-   [`collectByRoleSelectMenu` Example](#collectbyroleselectmenu-example)
+-   [`collectByChannelSelectMenu` Example](#collectbychannelselectmenu-example)
 -   [`collectByModal` Example](#collectByModal-example)
 -   [`collectByReaction` Example](#collectbyreaction-example)
 -   [`collectByMessage` Example](#collectbymessage-example)
@@ -27,7 +30,6 @@ const { CollectorUtils } = require('discord.js-collector-utils');
 // OR
 import { CollectorUtils } from 'discord.js-collector-utils';
 ```
-
 ## `collectByButton` Example
 
 ![](https://i.imgur.com/tILSNFD.png)
@@ -96,7 +98,7 @@ if (result === undefined) {
 await result.intr.reply(`You selected **${result.value}**. Nice choice!`);
 ```
 
-## `collectBySelectMenu` Example
+## `collectByStringSelectMenu` Example
 
 ![](https://i.imgur.com/fS1UQzo.png)
 
@@ -133,6 +135,7 @@ let prompt = await channel.send({
     ],
 });
 
+
 let result = await CollectorUtils.collectBySelectMenu(
     prompt,
     // Retrieve Result
@@ -159,6 +162,145 @@ if (result === undefined) {
 }
 
 await result.intr.reply(`You selected **${result.value}**. Nice choice!`);
+```
+
+
+## `collectByUser` Example
+
+![](https://i.imgur.com/2fCmtbG.png)
+
+```javascript
+let prompt = await channel.send({
+    content: 'Please select your favorite user!',
+    components: [
+        {
+            type: ComponentType.ActionRow,
+            components: [{
+                type: ComponentType.UserSelect,
+                customId: 'select_user',
+            }],
+        },
+    ],
+});
+
+let result = await CollectorUtils.CollectorUtils.collectByUserSelectMenu(
+    prompt,
+    // Retrieve Result
+    async buttonInteraction => {
+        return {
+            intr: selectMenuInteraction,
+            value: selectMenuInteraction.values[0],
+        };
+    },
+    // Options
+    {
+        time: 10000,
+        reset: true,
+        target: user,
+        stopFilter: message => message.content.toLowerCase() === 'stop',
+        onExpire: async () => {
+            await channel.send('Too slow! Try being more decisive next time.');
+        },
+    }
+);
+
+if (result === undefined) {
+    return;
+}
+
+await result.intr.reply(`You selected **<@#${result.value}>**. Nice choice!`);
+```
+
+## `collectByRole` Example
+
+![](https://i.imgur.com/qBoZDZk.png)
+
+```javascript
+let prompt = await channel.send({
+    content: 'Please select your favorite role!',
+    components: [
+        {
+            type: ComponentType.ActionRow,
+            components: [{
+                type: ComponentType.roleSelect,
+                customId: 'select_role',
+            }],
+        },
+    ],
+});
+
+let result = await CollectorUtils.CollectorUtils.collectByRoleSelectMenu(
+    prompt,
+    // Retrieve Result
+    async buttonInteraction => {
+        return {
+            intr: selectMenuInteraction,
+            value: selectMenuInteraction.values[0],
+        };
+    },
+    // Options
+    {
+        time: 10000,
+        reset: true,
+        target: user,
+        stopFilter: message => message.content.toLowerCase() === 'stop',
+        onExpire: async () => {
+            await channel.send('Too slow! Try being more decisive next time.');
+        },
+    }
+);
+
+if (result === undefined) {
+    return;
+}
+
+await result.intr.reply(`You selected **<@&${result.value}>**. Nice choice!`);
+```
+
+## `collectByChannel` Example
+
+![](https://i.imgur.com/mYDhkef.png)
+
+```javascript
+let prompt = await channel.send({
+    content: 'Please select your favorite channel!',
+    components: [
+        {
+            type: ComponentType.ActionRow,
+            components: [{
+                type: ComponentType.ChannelSelect,
+                customId: 'select_channel',
+            }],
+        },
+    ],
+});
+
+let result = await CollectorUtils.CollectorUtils.collectByChannelSelectMenu(
+    prompt,
+    // Retrieve Result
+    async buttonInteraction => {
+        return {
+            intr: selectMenuInteraction,
+            value: selectMenuInteraction.values[0],
+        };
+    },
+    // Options
+    {
+        time: 10000,
+        reset: true,
+        target: user,
+        stopFilter: message => message.content.toLowerCase() === 'stop',
+        onExpire: async () => {
+            await channel.send('Too slow! Try being more decisive next time.');
+        },
+    }
+);
+
+if (result === undefined) {
+    return;
+}
+
+await result.intr.reply(`You selected **<#${result.value}>**. Nice choice!`);
 ```
 
 ## `collectByModal` Example
