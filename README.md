@@ -30,142 +30,6 @@ const { CollectorUtils } = require('discord.js-collector-utils');
 // OR
 import { CollectorUtils } from 'discord.js-collector-utils';
 ```
-
-## `collectByButton` Example
-
-![](https://i.imgur.com/tILSNFD.png)
-
-```javascript
-let prompt = await channel.send({
-    content: 'Please select your favorite fruit!',
-    components: [
-        {
-            type: ComponentType.ActionRow,
-            components: [
-                {
-                    type: ComponentType.Button,
-                    customId: 'watermelon',
-                    emoji: '🍉',
-                    style: ButtonStyle.Primary,
-                },
-                {
-                    type: ComponentType.Button,
-                    customId: 'apple',
-                    emoji: '🍎',
-                    style: ButtonStyle.Primary,
-                },
-                {
-                    type: ComponentType.Button,
-                    customId: 'banana',
-                    emoji: '🍌',
-                    style: ButtonStyle.Primary,
-                },
-            ],
-        },
-    ],
-});
-
-let result = await CollectorUtils.collectByButton(
-    prompt,
-    // Retrieve Result
-    async buttonInteraction => {
-        switch (buttonInteraction.customId) {
-            case 'watermelon':
-                return { intr: buttonInteraction, value: 'Watermelon' };
-            case 'apple':
-                return { intr: buttonInteraction, value: 'Apple' };
-            case 'banana':
-                return { intr: buttonInteraction, value: 'Banana' };
-            default:
-                return;
-        }
-    },
-    // Options
-    {
-        time: 10000,
-        reset: true,
-        target: user,
-        stopFilter: message => message.content.toLowerCase() === 'stop',
-        onExpire: async () => {
-            await channel.send('Too slow! Try being more decisive next time.');
-        },
-    }
-);
-
-if (result === undefined) {
-    return;
-}
-
-await result.intr.reply(`You selected **${result.value}**. Nice choice!`);
-```
-## `collectByButton` Example
-
-![](https://i.imgur.com/tILSNFD.png)
-
-```javascript
-let prompt = await channel.send({
-    content: 'Please select your favorite fruit!',
-    components: [
-        {
-            type: ComponentType.ActionRow,
-            components: [
-                {
-                    type: ComponentType.Button,
-                    customId: 'watermelon',
-                    emoji: '🍉',
-                    style: ButtonStyle.Primary,
-                },
-                {
-                    type: ComponentType.Button,
-                    customId: 'apple',
-                    emoji: '🍎',
-                    style: ButtonStyle.Primary,
-                },
-                {
-                    type: ComponentType.Button,
-                    customId: 'banana',
-                    emoji: '🍌',
-                    style: ButtonStyle.Primary,
-                },
-            ],
-        },
-    ],
-});
-
-let result = await CollectorUtils.collectByButton(
-    prompt,
-    // Retrieve Result
-    async buttonInteraction => {
-        switch (buttonInteraction.customId) {
-            case 'watermelon':
-                return { intr: buttonInteraction, value: 'Watermelon' };
-            case 'apple':
-                return { intr: buttonInteraction, value: 'Apple' };
-            case 'banana':
-                return { intr: buttonInteraction, value: 'Banana' };
-            default:
-                return;
-        }
-    },
-    // Options
-    {
-        time: 10000,
-        reset: true,
-        target: user,
-        stopFilter: message => message.content.toLowerCase() === 'stop',
-        onExpire: async () => {
-            await channel.send('Too slow! Try being more decisive next time.');
-        },
-    }
-);
-
-if (result === undefined) {
-    return;
-}
-
-await result.intr.reply(`You selected **${result.value}**. Nice choice!`);
-```
-
 ## `collectByButton` Example
 
 ![](https://i.imgur.com/tILSNFD.png)
@@ -303,7 +167,7 @@ await result.intr.reply(`You selected **${result.value}**. Nice choice!`);
 
 ## `collectByUser` Example
 
-![](https://i.imgur.com/mYDhkef.png)
+![](https://i.imgur.com/2fCmtbG.png)
 
 ```javascript
 let prompt = await channel.send({
@@ -349,7 +213,7 @@ await result.intr.reply(`You selected **<@#${result.value}>**. Nice choice!`);
 
 ## `collectByRole` Example
 
-![](https://i.imgur.com/mYDhkef.png)
+![](https://i.imgur.com/qBoZDZk.png)
 
 ```javascript
 let prompt = await channel.send({
