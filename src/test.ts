@@ -109,7 +109,7 @@ async function start(): Promise<void> {
                     return;
                 }
 
-                case 'select-menu': {
+                case 'string-select-menu': {
                     let prompt = await channel.send({
                         content: 'Please select your favorite fruit!',
                         components: [
@@ -117,7 +117,7 @@ async function start(): Promise<void> {
                                 type: ComponentType.ActionRow,
                                 components: [
                                     {
-                                        type: ComponentType.SelectMenu,
+                                        type: ComponentType.StringSelect,
                                         customId: 'select_menu',
                                         options: [
                                             {
@@ -142,7 +142,7 @@ async function start(): Promise<void> {
                         ],
                     });
 
-                    let result = await CollectorUtils.collectBySelectMenu(
+                    let result = await CollectorUtils.collectByStringSelectMenu(
                         prompt,
                         // Retrieve Result
                         async selectMenuInteraction => {
@@ -170,7 +170,138 @@ async function start(): Promise<void> {
                     await result.intr.reply(`You selected **${result.value}**. Nice choice!`);
                     return;
                 }
+                case 'user-select-menu': {
+                    let prompt = await channel.send({
+                        content: 'Please select your favorite user!',
+                        components: [
+                            {
+                                type: ComponentType.ActionRow,
+                                components: [
+                                    {
+                                        type: ComponentType.UserSelect,
+                                        customId: 'select_user',
+                                    },
+                                ],
+                            },
+                        ],
+                    });
 
+                    let result = await CollectorUtils.collectByUserSelectMenu(
+                        prompt,
+                        // Retrieve Result
+                        async selectMenuInteraction => {
+                            return {
+                                intr: selectMenuInteraction,
+                                value: selectMenuInteraction.values[0],
+                            };
+                        },
+                        // Options
+                        {
+                            time: 10000,
+                            reset: true,
+                            target: user,
+                            stopFilter: message => message.content.toLowerCase() === 'stop',
+                            onExpire: async () => {
+                                await channel.send('Too slow! Try being more decisive next time.');
+                            },
+                        }
+                    );
+
+                    if (result === undefined) {
+                        return;
+                    }
+                    console.log(result.value)
+                    await result.intr.reply(`You selected **<@${result.value}>**. Nice choice!`);
+                    return;
+                }
+                case 'role-select-menu': {
+                    let prompt = await channel.send({
+                        content: 'Please select your favorite role!',
+                        components: [
+                            {
+                                type: ComponentType.ActionRow,
+                                components: [
+                                    {
+                                        type: ComponentType.RoleSelect,
+                                        customId: 'select_role',
+                                    },
+                                ],
+                            },
+                        ],
+                    });
+
+                    let result = await CollectorUtils.collectByRoleSelectMenu(
+                        prompt,
+                        // Retrieve Result
+                        async selectMenuInteraction => {
+                            return {
+                                intr: selectMenuInteraction,
+                                value: selectMenuInteraction.values[0],
+                            };
+                        },
+                        // Options
+                        {
+                            time: 10000,
+                            reset: true,
+                            target: user,
+                            stopFilter: message => message.content.toLowerCase() === 'stop',
+                            onExpire: async () => {
+                                await channel.send('Too slow! Try being more decisive next time.');
+                            },
+                        }
+                    );
+
+                    if (result === undefined) {
+                        return;
+                    }
+
+                    await result.intr.reply(`You selected **<@&${result.value}>**. Nice choice!`);
+                    return;
+                }
+                case 'channel-select-menu': {
+                    let prompt = await channel.send({
+                        content: 'Please select your favorite channel!',
+                        components: [
+                            {
+                                type: ComponentType.ActionRow,
+                                components: [
+                                    {
+                                        type: ComponentType.ChannelSelect,
+                                        customId: 'select_role',
+                                    },
+                                ],
+                            },
+                        ],
+                    });
+
+                    let result = await CollectorUtils.collectByChannelSelectMenu(
+                        prompt,
+                        // Retrieve Result
+                        async selectMenuInteraction => {
+                            return {
+                                intr: selectMenuInteraction,
+                                value: selectMenuInteraction.values[0],
+                            };
+                        },
+                        // Options
+                        {
+                            time: 10000,
+                            reset: true,
+                            target: user,
+                            stopFilter: message => message.content.toLowerCase() === 'stop',
+                            onExpire: async () => {
+                                await channel.send('Too slow! Try being more decisive next time.');
+                            },
+                        }
+                    );
+
+                    if (result === undefined) {
+                        return;
+                    }
+
+                    await result.intr.reply(`You selected **<#${result.value}>**. Nice choice!`);
+                    return;
+                }
                 case 'modal': {
                     let prompt = await channel.send({
                         content: 'What is your favorite movie?',
