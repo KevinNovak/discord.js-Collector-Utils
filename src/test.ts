@@ -18,6 +18,8 @@ async function start(): Promise<void> {
             IntentsBitField.Flags.GuildMessages,
             IntentsBitField.Flags.GuildMessageReactions,
             IntentsBitField.Flags.MessageContent,
+            IntentsBitField.Flags.DirectMessages,
+            IntentsBitField.Flags.DirectMessageReactions,
         ],
     });
 
@@ -109,7 +111,7 @@ async function start(): Promise<void> {
                     return;
                 }
 
-                case 'select-menu': {
+                case 'string-select': {
                     let prompt = await channel.send({
                         content: 'Please select your favorite fruit!',
                         components: [
@@ -117,8 +119,8 @@ async function start(): Promise<void> {
                                 type: ComponentType.ActionRow,
                                 components: [
                                     {
-                                        type: ComponentType.SelectMenu,
-                                        customId: 'select_menu',
+                                        type: ComponentType.StringSelect,
+                                        customId: 'string_select',
                                         options: [
                                             {
                                                 emoji: '🍉',
@@ -142,7 +144,7 @@ async function start(): Promise<void> {
                         ],
                     });
 
-                    let result = await CollectorUtils.collectBySelectMenu(
+                    let result = await CollectorUtils.collectByStringSelect(
                         prompt,
                         // Retrieve Result
                         async selectMenuInteraction => {
@@ -168,6 +170,166 @@ async function start(): Promise<void> {
                     }
 
                     await result.intr.reply(`You selected **${result.value}**. Nice choice!`);
+                    return;
+                }
+
+                case 'user-select': {
+                    let prompt = await channel.send({
+                        content: 'Please select a user!',
+                        components: [
+                            {
+                                type: ComponentType.ActionRow,
+                                components: [
+                                    {
+                                        type: ComponentType.UserSelect,
+                                        customId: 'user_select',
+                                    },
+                                ],
+                            },
+                        ],
+                    });
+
+                    let result = await CollectorUtils.collectByUserSelect(
+                        prompt,
+                        async interaction => {
+                            return {
+                                intr: interaction,
+                                value: interaction.values[0],
+                            };
+                        },
+                        {
+                            time: 10000,
+                            reset: true,
+                            target: user,
+                            stopFilter: message => message.content.toLowerCase() === 'stop',
+                            onExpire: async () => {
+                                await channel.send('Too slow!');
+                            },
+                        }
+                    );
+
+                    if (result === undefined) return;
+                    await result.intr.reply(`You selected <@${result.value}>!`);
+                    return;
+                }
+
+                case 'role-select': {
+                    let prompt = await channel.send({
+                        content: 'Please select a role!',
+                        components: [
+                            {
+                                type: ComponentType.ActionRow,
+                                components: [
+                                    {
+                                        type: ComponentType.RoleSelect,
+                                        customId: 'role_select',
+                                    },
+                                ],
+                            },
+                        ],
+                    });
+
+                    let result = await CollectorUtils.collectByRoleSelect(
+                        prompt,
+                        async interaction => {
+                            return {
+                                intr: interaction,
+                                value: interaction.values[0],
+                            };
+                        },
+                        {
+                            time: 10000,
+                            reset: true,
+                            target: user,
+                            stopFilter: message => message.content.toLowerCase() === 'stop',
+                            onExpire: async () => {
+                                await channel.send('Too slow!');
+                            },
+                        }
+                    );
+
+                    if (result === undefined) return;
+                    await result.intr.reply(`You selected <@&${result.value}>!`);
+                    return;
+                }
+
+                case 'mentionable-select': {
+                    let prompt = await channel.send({
+                        content: 'Please select a mentionable!',
+                        components: [
+                            {
+                                type: ComponentType.ActionRow,
+                                components: [
+                                    {
+                                        type: ComponentType.MentionableSelect,
+                                        customId: 'mentionable_select',
+                                    },
+                                ],
+                            },
+                        ],
+                    });
+
+                    let result = await CollectorUtils.collectByMentionableSelect(
+                        prompt,
+                        async interaction => {
+                            return {
+                                intr: interaction,
+                                value: interaction.values[0],
+                            };
+                        },
+                        {
+                            time: 10000,
+                            reset: true,
+                            target: user,
+                            stopFilter: message => message.content.toLowerCase() === 'stop',
+                            onExpire: async () => {
+                                await channel.send('Too slow!');
+                            },
+                        }
+                    );
+
+                    if (result === undefined) return;
+                    await result.intr.reply(`You selected <@${result.value}>!`);
+                    return;
+                }
+
+                case 'channel-select': {
+                    let prompt = await channel.send({
+                        content: 'Please select a channel!',
+                        components: [
+                            {
+                                type: ComponentType.ActionRow,
+                                components: [
+                                    {
+                                        type: ComponentType.ChannelSelect,
+                                        customId: 'channel_select',
+                                    },
+                                ],
+                            },
+                        ],
+                    });
+
+                    let result = await CollectorUtils.collectByChannelSelect(
+                        prompt,
+                        async interaction => {
+                            return {
+                                intr: interaction,
+                                value: interaction.values[0],
+                            };
+                        },
+                        {
+                            time: 10000,
+                            reset: true,
+                            target: user,
+                            stopFilter: message => message.content.toLowerCase() === 'stop',
+                            onExpire: async () => {
+                                await channel.send('Too slow!');
+                            },
+                        }
+                    );
+
+                    if (result === undefined) return;
+                    await result.intr.reply(`You selected <#${result.value}>!`);
                     return;
                 }
 
@@ -212,7 +374,7 @@ async function start(): Promise<void> {
                         }),
                         // Retrieve Result
                         async modalSubmitInteraction => {
-                            let textInput = modalSubmitInteraction.components[0].components[0];
+                            let textInput = (modalSubmitInteraction.components[0] as any).components[0];
                             if (textInput.type !== ComponentType.TextInput) {
                                 return;
                             }
