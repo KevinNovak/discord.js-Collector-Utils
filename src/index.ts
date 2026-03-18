@@ -355,9 +355,13 @@ export class CollectorUtils {
     }
 
     private static getStopCollector(
-        channel: TextBasedChannel,
+        channel: TextBasedChannel | null,
         options: CollectOptions
-    ): MessageCollector {
+    ): MessageCollector | undefined {
+        if (!channel) {
+            return undefined;
+        }
+
         return (channel as ChannelWithCollector).createMessageCollector({
             filter: message => {
                 if (!options.stopFilter) {
@@ -378,7 +382,7 @@ export class CollectorUtils {
 
     private static async awaitCollector<T>(
         mainCollector: Collector<any, any, any>,
-        stopCollector: MessageCollector,
+        stopCollector: MessageCollector | undefined,
         retriever: (...args: any[]) => Promise<T | undefined>,
         options: CollectOptions
     ): Promise<T | undefined> {
@@ -390,7 +394,7 @@ export class CollectorUtils {
                 if (result === undefined) {
                     if (options.reset) {
                         mainCollector.resetTimer();
-                        stopCollector.resetTimer();
+                        stopCollector?.resetTimer();
                     }
                     return;
                 } else {
@@ -402,13 +406,13 @@ export class CollectorUtils {
             });
 
             mainCollector.on('end', async collected => {
-                stopCollector.stop();
+                stopCollector?.stop();
                 if (expired && options.onExpire) {
                     await options.onExpire();
                 }
             });
 
-            stopCollector.on('collect', async (nextMsg: Message) => {
+            stopCollector?.on('collect', async (nextMsg: Message) => {
                 expired = false;
                 mainCollector.stop();
                 resolve(undefined);
