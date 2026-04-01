@@ -42,8 +42,8 @@ export class CollectorUtils {
         let collector = message.createMessageComponentCollector({
             componentType: ComponentType.Button,
             filter: intr => {
-                if (options.target) {
-                    return intr.user.id === options.target.id;
+                if (options.targetId) {
+                    return intr.user.id === options.targetId;
                 }
                 return true;
             },
@@ -75,8 +75,8 @@ export class CollectorUtils {
         let collector = message.createMessageComponentCollector({
             componentType: ComponentType.StringSelect,
             filter: intr => {
-                if (options.target) {
-                    return intr.user.id === options.target.id;
+                if (options.targetId) {
+                    return intr.user.id === options.targetId;
                 }
                 return true;
             },
@@ -108,8 +108,8 @@ export class CollectorUtils {
         let collector = message.createMessageComponentCollector({
             componentType: ComponentType.UserSelect,
             filter: intr => {
-                if (options.target) {
-                    return intr.user.id === options.target.id;
+                if (options.targetId) {
+                    return intr.user.id === options.targetId;
                 }
                 return true;
             },
@@ -141,8 +141,8 @@ export class CollectorUtils {
         let collector = message.createMessageComponentCollector({
             componentType: ComponentType.RoleSelect,
             filter: intr => {
-                if (options.target) {
-                    return intr.user.id === options.target.id;
+                if (options.targetId) {
+                    return intr.user.id === options.targetId;
                 }
                 return true;
             },
@@ -174,8 +174,8 @@ export class CollectorUtils {
         let collector = message.createMessageComponentCollector({
             componentType: ComponentType.MentionableSelect,
             filter: intr => {
-                if (options.target) {
-                    return intr.user.id === options.target.id;
+                if (options.targetId) {
+                    return intr.user.id === options.targetId;
                 }
                 return true;
             },
@@ -207,8 +207,8 @@ export class CollectorUtils {
         let collector = message.createMessageComponentCollector({
             componentType: ComponentType.ChannelSelect,
             filter: intr => {
-                if (options.target) {
-                    return intr.user.id === options.target.id;
+                if (options.targetId) {
+                    return intr.user.id === options.targetId;
                 }
                 return true;
             },
@@ -242,8 +242,8 @@ export class CollectorUtils {
         let collector = message.createMessageComponentCollector({
             componentType: ComponentType.Button,
             filter: intr => {
-                if (options.target) {
-                    return intr.user.id === options.target.id;
+                if (options.targetId) {
+                    return intr.user.id === options.targetId;
                 }
                 return true;
             },
@@ -290,8 +290,8 @@ export class CollectorUtils {
         options = this.getOptions(options);
         let collector = message.createReactionCollector({
             filter: (msgReaction, reactor) => {
-                if (options.target) {
-                    return reactor.id === options.target.id;
+                if (options.targetId) {
+                    return reactor.id === options.targetId;
                 }
                 return true;
             },
@@ -323,8 +323,8 @@ export class CollectorUtils {
         options = this.getOptions(options);
         let collector = (channel as ChannelWithCollector).createMessageCollector({
             filter: message => {
-                if (options.target) {
-                    return message.author.id === options.target.id;
+                if (options.targetId) {
+                    return message.author.id === options.targetId;
                 }
                 return true;
             },
@@ -371,8 +371,8 @@ export class CollectorUtils {
                 if (!stop) {
                     return false;
                 }
-                if (options.target) {
-                    return message.author.id === options.target.id;
+                if (options.targetId) {
+                    return message.author.id === options.targetId;
                 }
                 return true;
             },
@@ -433,9 +433,9 @@ export interface CollectOptions {
      */
     reset?: boolean;
     /**
-     * Target user to collect from.
+     * Target user ID to collect from.
      */
-    target?: User;
+    targetId?: string;
     /**
      * Method which takes message and returns a boolean as to whether the collector should be silently stopped.
      */
