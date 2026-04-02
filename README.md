@@ -81,7 +81,7 @@ let result = await CollectorUtils.collectByButton(
     {
         time: 10000,
         reset: true,
-        target: user,
+        targetId: userId,
         stopFilter: message => message.content.toLowerCase() === 'stop',
         onExpire: async () => {
             await channel.send('Too slow! Try being more decisive next time.');
@@ -146,7 +146,7 @@ let result = await CollectorUtils.collectBySelectMenu(
     {
         time: 10000,
         reset: true,
-        target: user,
+        targetId: userId,
         stopFilter: message => message.content.toLowerCase() === 'stop',
         onExpire: async () => {
             await channel.send('Too slow! Try being more decisive next time.');
@@ -222,7 +222,7 @@ let result = await CollectorUtils.collectByModal(
     {
         time: 10000,
         reset: true,
-        target: user,
+        targetId: userId,
         stopFilter: message => message.content.toLowerCase() === 'stop',
         onExpire: async () => {
             await channel.send('Too slow! Try being more decisive next time.');
@@ -267,7 +267,7 @@ let favoriteFruit = await CollectorUtils.collectByReaction(
     {
         time: 10000,
         reset: true,
-        target: user,
+        targetId: userId,
         stopFilter: message => message.content.toLowerCase() === 'stop',
         onExpire: async () => {
             await channel.send('Too slow! Try being more decisive next time.');
@@ -315,7 +315,7 @@ let favoriteColor = await CollectorUtils.collectByMessage(
     {
         time: 10000,
         reset: true,
-        target: user,
+        targetId: userId,
         stopFilter: message => message.content.toLowerCase() === 'stop',
         onExpire: async () => {
             await channel.send(`Too slow! Try being more decisive next time.`);
