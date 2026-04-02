@@ -31,7 +31,7 @@ async function start(): Promise<void> {
         try {
             let client = event.client;
             let channel = event.channel;
-            let user = event.author;
+            let userId = event.author.id;
             let args = event.content.split(' ');
 
             let command = args[0]?.toLowerCase();
@@ -95,7 +95,7 @@ async function start(): Promise<void> {
                         {
                             time: 10000,
                             reset: true,
-                            target: user,
+                            targetId: userId,
                             stopFilter: message => message.content.toLowerCase() === 'stop',
                             onExpire: async () => {
                                 await channel.send('Too slow! Try being more decisive next time.');
@@ -157,7 +157,7 @@ async function start(): Promise<void> {
                         {
                             time: 10000,
                             reset: true,
-                            target: user,
+                            targetId: userId,
                             stopFilter: message => message.content.toLowerCase() === 'stop',
                             onExpire: async () => {
                                 await channel.send('Too slow! Try being more decisive next time.');
@@ -200,7 +200,7 @@ async function start(): Promise<void> {
                         {
                             time: 10000,
                             reset: true,
-                            target: user,
+                            targetId: userId,
                             stopFilter: message => message.content.toLowerCase() === 'stop',
                             onExpire: async () => {
                                 await channel.send('Too slow!');
@@ -240,7 +240,7 @@ async function start(): Promise<void> {
                         {
                             time: 10000,
                             reset: true,
-                            target: user,
+                            targetId: userId,
                             stopFilter: message => message.content.toLowerCase() === 'stop',
                             onExpire: async () => {
                                 await channel.send('Too slow!');
@@ -280,7 +280,7 @@ async function start(): Promise<void> {
                         {
                             time: 10000,
                             reset: true,
-                            target: user,
+                            targetId: userId,
                             stopFilter: message => message.content.toLowerCase() === 'stop',
                             onExpire: async () => {
                                 await channel.send('Too slow!');
@@ -320,7 +320,7 @@ async function start(): Promise<void> {
                         {
                             time: 10000,
                             reset: true,
-                            target: user,
+                            targetId: userId,
                             stopFilter: message => message.content.toLowerCase() === 'stop',
                             onExpire: async () => {
                                 await channel.send('Too slow!');
@@ -392,7 +392,7 @@ async function start(): Promise<void> {
                         {
                             time: 10000,
                             reset: true,
-                            target: user,
+                            targetId: userId,
                             stopFilter: message => message.content.toLowerCase() === 'stop',
                             onExpire: async () => {
                                 await channel.send('Too slow! Try being more decisive next time.');
@@ -434,7 +434,7 @@ async function start(): Promise<void> {
                         {
                             time: 10000,
                             reset: true,
-                            target: user,
+                            targetId: userId,
                             stopFilter: message => message.content.toLowerCase() === 'stop',
                             onExpire: async () => {
                                 await channel.send('Too slow! Try being more decisive next time.');
@@ -488,7 +488,7 @@ async function start(): Promise<void> {
                         {
                             time: 10000,
                             reset: true,
-                            target: user,
+                            targetId: userId,
                             stopFilter: message => message.content.toLowerCase() === 'stop',
                             onExpire: async () => {
                                 await channel.send(`Too slow! Try being more decisive next time.`);
